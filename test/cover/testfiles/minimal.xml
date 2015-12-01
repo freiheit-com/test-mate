@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE report PUBLIC "-//JACOCO//DTD Report 1.0//EN" "report.dtd">
+<report name="hunter-deploy">
+	<sessioninfo id="sessionid" start="1449002185737" dump="1449002243133"/>
+
+<package name="com/freiheit/my/package">
+	<class name="com/freiheit/my/package/MyClass">
+		<method name="&lt;init&gt;" desc="()V" line="37">
+			<counter type="INSTRUCTION" missed="3" covered="0"/>
+			<counter type="LINE" missed="100" covered="50"/>
+			<counter type="COMPLEXITY" missed="1" covered="0"/>
+			<counter type="METHOD" missed="1" covered="0"/>
+		</method>
+	</class>
+</package>
+
+</report>
