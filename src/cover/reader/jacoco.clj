@@ -10,7 +10,7 @@
          (.setFeature "http://xml.org/sax/features/external-general-entities" false)
          (.setFeature "http://xml.org/sax/features/external-parameter-entities" false))
 
-         (newSAXParser) (parse s ch)))
+        (newSAXParser) (parse s ch)))
 
 (defn read-report [report]
    (xml/parse report startparse-sax-non-validating))

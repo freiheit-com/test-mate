@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE report PUBLIC "-//JACOCO//DTD Report 1.0//EN" "report.dtd">
+<report name="hunter-deploy">
+	<sessioninfo id="sessionid" start="1449002185737" dump="1449002243133"/>
+
+<package name="com/freiheit/my/package">
+	<class name="com/freiheit/my/package/MyClass1">
+		<method name="&lt;init&gt;" desc="()V" line="37">
+			<counter type="LINE" missed="10" covered="5"/>
+		</method>
+		<method name="&lt;init&gt;" desc="()V" line="37">
+			<counter type="LINE" missed="100" covered="11"/>
+		</method>
+		<method name="&lt;init&gt;" desc="()V" line="37">
+			<counter type="LINE" missed="4" covered="86"/>
+		</method>
+	</class>
+	<class name="com/freiheit/my/package/MyClass2">
+		<method name="&lt;init&gt;" desc="()V" line="37">
+			<counter type="LINE" missed="75" covered="98"/>
+		</method>
+		<method name="&lt;init&gt;" desc="()V" line="37">
+			<counter type="LINE" missed="53" covered="87"/>
+		</method>
+	</class>
+</package>
+
+<package name="com/freiheit/my/package/sub">
+	<class name="com/freiheit/my/package/sub/MyClass1">
+		<method name="&lt;init&gt;" desc="()V" line="37">
+			<counter type="LINE" missed="0" covered="53"/>
+		</method>
+	</class>
+</package>
+
+<package name="com/freiheit/my/package/sub2">
+	<class name="com/freiheit/my/package/sub/MyClass1">
+		<method name="&lt;init&gt;" desc="()V" line="37">
+			<counter type="LINE" missed="50" covered="50"/>
+		</method>
+	</class>
+	<class name="com/freiheit/my/package/sub/MyClass2">
+		<method name="&lt;init&gt;" desc="()V" line="37">
+			<counter type="LINE" missed="50" covered="50"/>
+		</method>
+		<method name="&lt;init&gt;" desc="()V" line="37">
+			<counter type="LINE" missed="46" covered="75"/>
+		</method>
+		<method name="&lt;init&gt;" desc="()V" line="37">
+			<counter type="LINE" missed="43" covered="98"/>
+		</method>
+		<method name="&lt;init&gt;" desc="()V" line="37">
+			<counter type="LINE" missed="54" covered="44"/>
+		</method>
+	</class>
+</package>
+
+</report>

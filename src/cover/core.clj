@@ -1,5 +1,5 @@
 (ns cover.core
-  (:use cover.in.jacoco))
+  (:use cover.reader.jacoco cover.aggregate.jacoco))
 
 (defn -main [& args]
-  (read-report (first args)))
+  (println "aggregate: " (aggregate (rest args) (first args))))
