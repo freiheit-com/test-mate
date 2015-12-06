@@ -17,3 +17,8 @@
 
 (deftest should-aggregate-even-if-invalid-non-counter-in-method-data
   (is (= (aggregate (list "com/freiheit/my/package") "test/cover/testfiles/invalid_non_counter_elem_in_method.xml") {"com/freiheit/my/package" {:covered 50 :lines 100 :percentage 0.5}})))
+
+(deftest should-aggregate-class-coverage
+  (is (= (aggregate-class-coverage "test/cover/testfiles/class_coverage.xml")
+         {"com/freiheit/MyClass1" {:covered 0 :lines 10 :percentage 0.0}, "com/freiheit/foo/Bar" {:covered 10 :lines 100 :percentage 0.1},
+          "com/Bar2" {:covered 200 :lines 200 :percentage 1.0}})))

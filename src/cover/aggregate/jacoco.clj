@@ -46,6 +46,20 @@
       (assoc aggregation package-name (readable (aggregate-line-coverage {:content filtered})))
       aggregation)))
 
+(defn- report-packages [file-content]
+  (vec (rest (:content file-content))))
+
 (defn aggregate [packages file]
-  (let [report-packages (:content (read-report file))]
+  (let [report-packages (report-packages (read-report file))]
     (reduce (partial do-aggregate report-packages) {} packages)))
+
+(defn- assoc-class-coverage [aggregation class]
+  (assoc aggregation (:name (:attrs class)) (readable (aggregate-line-coverage class))))
+
+(defn- do-aggregate-classes [aggregation package]
+  (reduce assoc-class-coverage aggregation (:content package)))
+
+(defn aggregate-class-coverage [file]
+  "Aggregate coverage data for each class in report"
+  (let [report-packages (report-packages (read-report file))]
+    (reduce do-aggregate-classes {} report-packages)))
