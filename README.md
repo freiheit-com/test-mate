@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/freiheit-com/fdc-coverage-data-processing.svg?branch=master)](https://travis-ci.org/freiheit-com/fdc-coverage-data-processing)
+[![Build Status](https://travis-ci.org/freiheit-com/test-mate.svg?branch=master)](https://travis-ci.org/freiheit-com/test-mate)
 
 Usage:
 lein run aggregate <path/to/jacoco_coverage.xml> my/package/one my/package/two ...
