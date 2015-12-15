@@ -1,5 +1,6 @@
 (ns cover.core
-  (:use cover.reader.jacoco cover.aggregate.jacoco analysis.test-need [git :as git]))
+  (:use cover.reader.jacoco cover.aggregate.jacoco analysis.test-need [git :as git])
+  (:gen-class))
 
 (defn -main [& main-args]
   (let [command (first main-args)
