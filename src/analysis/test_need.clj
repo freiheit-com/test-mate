@@ -1,39 +1,58 @@
 (ns analysis.test-need
-  (:use cover.aggregate.jacoco [git :as git]))
+  (:require [cover.aggregate.jacoco :as jacoco]
+            [git                    :as git]))
 
-(defn- coverage-per-line [[file coverage]]
-  {:class file :uncovered (- (:lines coverage) (:covered coverage))})
+(defn- coverage-per-line [[file {:keys [lines covered]}]]
+  {:class file
+   :uncovered (- lines covered)})
 
 (defn analyse-test-need-coverage [coverage-file]
-  (reverse (sort-by :uncovered (map coverage-per-line (aggregate-class-coverage coverage-file)))))
+  (->> coverage-file
+       jacoco/aggregate-class-coverage
+       (map coverage-per-line)
+       (sort-by :uncovered)
+       reverse))
 
 (defn bugfix-commit? [log-line]
-  (. (. log-line toLowerCase) contains "fix"))
+  (.contains (.toLowerCase log-line) "fix"))
 
 (defn- add-commit-data [git-repo coverage-data]
-  (let [log (git/log git-repo (str (:class coverage-data) ".java"))]
-    (assoc coverage-data :commits (count log) :bugfixes (count (filter bugfix-commit? log)))))
+  (let [log (->> (str (:class coverage-data) ".java")
+                 (git/log git-repo))]
+    (assoc coverage-data
+           :commits (count log)
+           :bugfixes (count (filter bugfix-commit? log)))))
 
-;TODO param for 750
-(defn- join-bugfix-commit-data [git-repo coverage-data]
+(defn- join-bugfix-commit-data
   "Joins commit info to coverage data, takes only the first 750 coverage data since the commit data retrieval
   is very expensive"
-  (map (partial add-commit-data git-repo) (take 750 coverage-data)))
+  ([git-repo coverage-data & [commit-count]]
+   (let [n (or commit-count 750)]
+     (->> coverage-data
+          (map (partial add-commit-data git-repo))
+          (take n)))))
 
 (defn analyse-test-need [coverage-file git-repo]
-  (join-bugfix-commit-data git-repo (analyse-test-need-coverage coverage-file)))
+  (->> coverage-file
+       analyse-test-need-coverage
+       (join-bugfix-commit-data git-repo)))
 
-(defn- bugfix-per-uncovered-line [data]
-  (let [bugfixes (:bugfixes data)
-        uncovered (:uncovered data)]
-    (if (= 0 uncovered) 0 (/ bugfixes uncovered))))
+(defn- bugfix-per-uncovered-line [{:keys [bugfixes uncovered]}]
+  (if (= 0 uncovered)
+    0
+    (/ bugfixes uncovered)))
 
-;TODO param for count print
-(defn print-analyse-test-need [coverage-file git-repo]
-  "same as function without print, but formats result in a redable way"
-  (let [result (analyse-test-need coverage-file git-repo)
+(defn print-lines [lines]
+  (doseq [line lines]
+    (println line)))
+
+(defn print-analyse-test-need [coverage-file git-repo & [result-count]]
+  "Same as function without print, but formats result in a readable way"
+  (let [n (or result-count 25)
+        result (analyse-test-need coverage-file git-repo)
         by-bugfix (reverse (sort-by bugfix-per-uncovered-line result))]
-    (println "Ranked purely by most uncovered lines, you should write tests for this classes: ")
-    (println (take 25 result))
-    (println "Considering bugfixes for uncovered lines, you should write tests for this classes: ")
-    (println (take 25 by-bugfix))))
+    (print-lines
+     [["Ranked purely by most uncovered lines, you should write tests for these classes: "
+       (take n result)
+       "Considering bugfixes for uncovered lines, you should write tests for these classes: "
+       (take n by-bugfix)]])))

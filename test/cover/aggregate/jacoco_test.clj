@@ -1,5 +1,6 @@
-(ns cover.aggregate.jacoco_test
-  (:require [clojure.test :refer :all] [cover.aggregate.jacoco :refer :all]))
+(ns cover.aggregate.jacoco-test
+  (:require [clojure.test           :refer :all]
+            [cover.aggregate.jacoco :refer :all]))
 
 (def ^:const minimal "test/cover/testfiles/minimal.xml")
 
