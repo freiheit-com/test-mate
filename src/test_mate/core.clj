@@ -1,4 +1,4 @@
-(ns cover.core
+(ns test-mate.core
   (:use cover.reader.jacoco cover.aggregate.jacoco analysis.test-need [git :as git])
   (:gen-class))
 

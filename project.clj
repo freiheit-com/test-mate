@@ -5,4 +5,4 @@
             :url "https://www.gnu.org/licenses/agpl-3.0.html"}
   :dependencies [[org.clojure/clojure "1.7.0"]]
   :aot :all
-  :main cover.core)
+  :main test-mate.core)
