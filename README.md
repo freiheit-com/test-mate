@@ -2,9 +2,17 @@
 
 Usage:
 
-lein run aggregate <path/to/jacoco_coverage.xml> my/package/one my/package/two ...
+## Coverage data Aggregation
 
-lein run test-need <path/to/jacoco_coverage.xml> <path/to/git/repo>
+    lein run aggregate <path/to/jacoco_coverage.xml> my/package/one my/package/two ...
+
+Note: You can supply the special package "/" to aggregate the overall coverage result.
+
+# Analysis
+
+## test-need
+
+    lein run test-need <path/to/jacoco_coverage.xml> <path/to/git/repo>
 
 TODO:
 Some more doc for features
