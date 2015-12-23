@@ -2,7 +2,7 @@
 
 Usage:
 
-## Coverage data Aggregation
+# Coverage data Aggregation
 
     lein run aggregate <path/to/jacoco_coverage.xml> my/package/one my/package/two ...
 
