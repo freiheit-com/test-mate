@@ -2,12 +2,14 @@
   (:require [cover.reader.jacoco :as jacoco]))
 
 (def neutral-count [0 0])
+(def special-root-package "/")
 
 (def pack-name (comp :name :attrs))
 
 (defn- package-starts-with [prefix package-xml]
-  (and (= (:tag package-xml) :package)
-       (.startsWith (pack-name package-xml)  prefix)))
+  (or (= prefix special-root-package)
+      (and (= (:tag package-xml) :package)
+           (.startsWith (pack-name package-xml) prefix))))
 
 (defn- covered-lines [attrs]
   (let [missed (Integer/valueOf (:missed attrs))
@@ -50,7 +52,7 @@
              package-name (-> {:content filtered}
                               aggregate-line-coverage
                               readable))
-      aggregation)))
+      (assoc aggregation package-name {}))))
 
 (def report-packages (comp vec rest :content))
 
