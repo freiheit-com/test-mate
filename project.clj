@@ -3,6 +3,9 @@
   :url "http://example.com/FIXME"
   :license {:name "GPLv3"
             :url "https://www.gnu.org/licenses/agpl-3.0.html"}
-  :dependencies [[org.clojure/clojure "1.7.0"]]
+  :dependencies [[org.clojure/clojure "1.7.0"]
+                 [clj-http "2.0.0"]
+                 [cheshire "5.5.0"]]
   :aot :all
-  :main test-mate.core)
+  :main test-mate.core
+  :jvm-opts ["-Xss8m"]) ;workaround: big jacoco files need a lot of stack -> rewrite aggregation with tail recursion
