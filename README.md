@@ -41,6 +41,7 @@ in the config file.
     test-mate statistic-server add-project <path/to/project-def-file>
 
 The project-def-file expects this format:
+
     [
       {:skip true :project "project-name :subproject "subproject-name" :language "java"}
       {:project "project-name :subproject "subproject-name :language "clojure"}
