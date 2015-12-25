@@ -11,10 +11,10 @@
 (defn publish-statistic-data [coverage-file project-data]
   (let [coverage (select-keys (get (jacoco/aggregate '("/") coverage-file) "/") [:covered :lines])
         data (merge coverage (config/default-project) (edn/read-string project-data))]
-    (client/put publish-coverage-url {:body (cheshire/generate-string data)}
-                             :insecure? true
-                             :content-type :json
-                             :headers {"auth-token" (config/publish-auth-token)})))
+    (client/put publish-coverage-url {:body (cheshire/generate-string data)
+                                      :insecure? true
+                                      :content-type :json
+                                      :headers {"auth-token" (config/publish-auth-token)}})))
 
 (defn- put-project [project-def]
   (try
