@@ -16,7 +16,7 @@ You can provide the following data in the config file:
        :subproject "test-sub"
        :language "java"
      }
-   }
+    }
 
 TODO Supply config-file as an argument to test-mate (build-server friendly)
 
@@ -38,7 +38,20 @@ in the config file.
 
 ## adding projects
 
-TODO
+    test-mate statistic-server add-project <path/to/project-def-file>
+
+The project-def-file expects this format:
+    [
+      {:skip true :project "project-name :subproject "subproject-name" :language "java"}
+      {:project "project-name :subproject "subproject-name :language "clojure"}
+      {:project "test" :subproject "test-sub3" :language "java"}
+    ]
+
+The projects in this file are tried to be created in the statistic server. The result
+is printed to stdout.
+
+To ignore a project in the creation mark it with `:skip true` (this allows to keep
+a file with all projects in the statistic server and only append new projects).
 
 # Coverage data Aggregation
 
@@ -52,5 +65,4 @@ Note: You can supply the special package "/" to aggregate the overall coverage r
 
     test-mate test-need <path/to/jacoco_coverage.xml> <path/to/git/repo>
 
-TODO:
-Some more doc for features
+TODO: Describe test-need analysis?
