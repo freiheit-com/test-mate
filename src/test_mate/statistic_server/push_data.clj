@@ -5,18 +5,38 @@
             [cheshire.core :as cheshire]
             [clojure.edn :as edn]))
 
-(def publish-url (str (config/statistic-server-url) "/publish/coverage"))
+(def publish-coverage-url (str (config/statistic-server-url) "/publish/coverage"))
+(def add-project-url (str (config/statistic-server-url) "/meta/project"))
 
 (defn publish-statistic-data [coverage-file project-data]
   (let [coverage (select-keys (get (jacoco/aggregate '("/") coverage-file) "/") [:covered :lines])
         data (merge coverage (config/default-project) (edn/read-string project-data))]
-    (client/put publish-url {:body (cheshire/generate-string data)
+    (client/put publish-coverage-url {:body (cheshire/generate-string data)}
                              :insecure? true
                              :content-type :json
-                             :headers {"auth-token" (config/publish-auth-token)}})))
-;TODO
-(defn add-project [file]
-  (println "adding projects"))
+                             :headers {"auth-token" (config/publish-auth-token)})))
+
+(defn- put-project [project-def]
+  (try
+    (let [put-result (client/put add-project-url {:body (cheshire/generate-string project-def)
+                                                  :insecure? true
+                                                  :content-type :json
+                                                  :headers {"auth-token" (config/meta-auth-token)}})]
+       {:status (:status put-result) :project-def project-def})
+    (catch clojure.lang.ExceptionInfo e {:status (:status (ex-data e))
+                                         :project-def project-def})))
+(defn- handle-project [project-def]
+  (if (:skip project-def)
+    {:status :skipped :project-def project-def}
+    (put-project project-def)))
+
+(defn- print-result [result]
+  (when (not (= (:status result) :skipped))
+    (println (:status result) " -> "(:project-def result))))
+
+(defn add-project [project-file]
+  (let [projects-to-add (edn/read-string (slurp project-file))]
+    (doall (map print-result (map handle-project projects-to-add)))))
 
 (defn push-data [[cmd & args]]
   "Multiplex function for statistic-server commands"

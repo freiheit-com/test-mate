@@ -17,4 +17,7 @@
 (defn publish-auth-token []
   (-> *test-mate-config* :auth-tokens :publish))
 
+(defn meta-auth-token []
+  (-> *test-mate-config* :auth-tokens :meta))
+
 (def default-project (partial *test-mate-config* :default-project))
