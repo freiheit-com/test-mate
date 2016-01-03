@@ -18,7 +18,8 @@ You can provide the following data in the config file:
      }
     }
 
-TODO Supply config-file as an argument to test-mate (build-server friendly)
+Optionally, you can set the Java system property `fdc.test-mate.config.file` with a file-path to the config file.
+Setting the system property overrides the configuration in the home directory.
 
 # Interfacing with statistic server
 
