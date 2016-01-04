@@ -49,8 +49,9 @@ The project-def-file expects this format:
       {:project "test" :subproject "test-sub3" :language "java"}
     ]
 
-The projects in this file are tried to be created in the statistic server. The result
+test-mate tries to generate the projects from the file onto the statistic-server. The result
 is printed to stdout.
+
 
 To ignore a project in the creation mark it with `:skip true` (this allows to keep
 a file with all projects in the statistic server and only append new projects).
