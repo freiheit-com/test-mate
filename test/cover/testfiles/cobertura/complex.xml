@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
+<coverage lines-valid="2374"  lines-covered="939"  line-rate="0.39549999999999996"  branches-valid="993"  branches-covered="150"  branch-rate="0.15109999999999998"  timestamp="1453407251771" complexity="0" version="0.1">
+  <sources>
+    <source>/home/docker/project</source>
+  </sources>
+  <packages>
+    <package name="app"  line-rate="0.7778"  branch-rate="0.5" >
+      <classes>
+	<class name="actions.js"  filename="src/app/actions.js"  line-rate="1"  branch-rate="1" >
+	  <methods>
+	  </methods>
+	  <lines>
+	    <line number="1"  hits="11"  branch="false" />
+	    <line number="3"  hits="11"  branch="false" />
+	    <line number="68"  hits="11"  branch="false" />
+	  </lines>
+	</class>
+      </classes>
+    </package>
+  </packages>
+</coverage>

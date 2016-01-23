@@ -1,16 +1,17 @@
 (ns test-mate.statistic-server.push-data
   (:require [clj-http.client :as client]
             [test-mate.config :as config]
-            [cover.aggregate.jacoco :as jacoco]
+            [cover.parse :as parse]
             [cheshire.core :as cheshire]
             [clojure.edn :as edn]))
 
 (def publish-coverage-url (str (config/statistic-server-url) "/publish/coverage"))
 (def add-project-url (str (config/statistic-server-url) "/meta/project"))
 
-(defn publish-statistic-data [coverage-file project-data]
-  (let [coverage (select-keys (get (jacoco/aggregate '("/") coverage-file) "/") [:covered :lines])
-        data (merge coverage (config/default-project) (edn/read-string project-data))]
+
+(defn- send-data [coverage-stats project-name]
+  (let [coverage (select-keys coverage-stats [:covered :lines])
+        data (merge coverage project-name)]
     (client/put publish-coverage-url {:body (cheshire/generate-string data)
                                       :insecure? true
                                       :content-type :json
@@ -33,6 +34,10 @@
 (defn- print-result [result]
   (when (not (= (:status result) :skipped))
     (println (:status result) " -> "(:project-def result))))
+
+(defn publish-statistic-data [coverage-file project-data]
+  (send-data (parse/stats coverage-file)
+             (merge (config/default-project) (edn/read-string project-data))))
 
 (defn add-project [project-file]
   (let [projects-to-add (edn/read-string (slurp project-file))]

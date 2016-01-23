@@ -1,8 +1,11 @@
 (ns analysis.test-need-test
-  (:require [clojure.test :refer :all] [analysis.test-need :refer :all]))
+  (:require [clojure.test :refer :all]
+            [analysis.test-need :refer :all]))
+
+
 
 (deftest should-sort-by-most-uncovered-lines
-  (is (= (analyse-test-need-coverage "test/cover/testfiles/class_coverage.xml")
+  (is (= (analyse-test-need-coverage "test/cover/testfiles/jacoco/class_coverage.xml")
          '({:class "com/freiheit/foo/Bar" :uncovered 90} {:class "com/freiheit/MyClass1"  :uncovered 10}
            {:class "com/Bar2" :uncovered 0}))))
 

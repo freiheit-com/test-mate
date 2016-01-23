@@ -1,5 +1,5 @@
 (ns cover.aggregate.jacoco
-  (:require [cover.reader.jacoco :as jacoco]))
+  (:require [cover.reader.xml-non-validate :as reader]))
 
 (def neutral-count [0 0])
 (def special-root-package "/")
@@ -56,8 +56,9 @@
 
 (def report-packages (comp vec rest :content))
 
+
 (defn aggregate [packages file]
-  (let [report-packages (report-packages (jacoco/read-report file))]
+  (let [report-packages (report-packages (reader/read-report file))]
     (reduce (partial do-aggregate report-packages) {} packages)))
 
 (defn- assoc-class-coverage [aggregation class]
@@ -70,5 +71,10 @@
 
 (defn aggregate-class-coverage [file]
   "Aggregate coverage data for each class in report"
-  (let [report-packages (report-packages (jacoco/read-report file))]
+  (let [report-packages (report-packages (reader/read-report file))]
     (reduce do-aggregate-classes {} report-packages)))
+
+(defn stats
+  "Returns statistics from FILE"
+  [file]
+  (get (aggregate ["/"] file) "/"))
