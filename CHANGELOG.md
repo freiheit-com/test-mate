@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.4.1] - 2016-01-25
+### Fixed
+- broken package aggregation for jacoco reports
+
 ## [0.4.0] - 2016-01-25
 ### Added
 - Cobertura v4 coverage data aggregation support
