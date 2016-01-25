@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.4.0] - 2016-01-25
+## Added
+- Cobertura v4 coverage data aggregation support
+
 ## [0.3.0] - 2016-01-03
 ### Added
 - configuration can be set via system property fdc.test-mate.config.file
