@@ -96,8 +96,8 @@
 
 (deftest should-call-aggregate-root-on-cobertura
   (with-redefs-fn {#'cobertura/aggregate (fn [p & _] (is (_root? p)) :called)}
-    #(is (= :called (aggregate _minimal-cobertura)))))
+    #(is (= :called (aggregate _minimal-cobertura ["/"])))))
 
 (deftest should-call-aggregate-root-on-jacoco
   (with-redefs-fn {#'jacoco/aggregate (fn [p & _] (is (_root? p)) :called)}
-    #(is (= :called (aggregate _minimal-jacoco)))))
+    #(is (= :called (aggregate _minimal-jacoco ["/"])))))
