@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ## [0.4.0] - 2016-01-25
-## Added
+### Added
 - Cobertura v4 coverage data aggregation support
 
 ## [0.3.0] - 2016-01-03
