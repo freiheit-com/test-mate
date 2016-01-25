@@ -51,11 +51,11 @@
 
 (defn aggregate
    "Parses COVERAGE-FILE and returns an object of packages containing coverage data"
-  [coverage-file]
+  [coverage-file packages]
   (let [type (discover-type coverage-file)]
     (if (= :jacoco type)
-      (jacoco/aggregate ["/"] coverage-file)
-      (cobertura/aggregate ["/"] coverage-file))))
+      (jacoco/aggregate packages coverage-file)
+      (cobertura/aggregate packages coverage-file))))
 
 (defn stats
    "Parses COVERAGE-FILE and returns an object of packages containing coverage statistics"
