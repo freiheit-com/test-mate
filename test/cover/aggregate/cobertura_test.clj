@@ -78,3 +78,6 @@
 (deftest should-aggregate-all-in-bigger
   (is (= (aggregate ["package1" "package2"] _bigger) {"package1" {:covered 6 :lines 8 :percentage 0.75}
                                                       "package2" {:covered 3 :lines 4 :percentage 0.75}})))
+
+(deftest should-aggregate-all-if-no-package
+  (is (= (aggregate [] _minimal) {"package" {:covered 3 :lines 4 :percentage 0.75}})))

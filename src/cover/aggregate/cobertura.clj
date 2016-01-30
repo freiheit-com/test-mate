@@ -91,5 +91,5 @@
   (let [xml (reader/read-report file)
         lines (get-lines (z/xml-zip xml))
         by-package (group-by get-package lines)
-        wanted-packages (select-keys by-package packages)]
+        wanted-packages (if (empty? packages) by-package (select-keys by-package packages))]
     (update-values get-summary wanted-packages)))
