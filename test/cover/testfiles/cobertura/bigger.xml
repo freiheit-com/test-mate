@@ -1,0 +1,47 @@
+<?xml version="1.0" ?>
+<!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
+<coverage lines-valid="4"  lines-covered="3"  line-rate="0.75"  branches-valid="4"  branches-covered="3"  branch-rate="0.75"  timestamp="1453407251771" complexity="0" version="0.1">
+  <sources>
+    <source>/home/docker/project</source>
+  </sources>
+  <packages>
+    <package name="package1"  line-rate="0.75"  branch-rate="0.75" >
+      <classes>
+	<class name="class1"  filename="src/app/actions.js"  line-rate="0.75"  branch-rate="0.75" >
+	  <methods>
+	  </methods>
+	  <lines>
+	    <line number="1"  hits="11"  branch="false" />
+	    <line number="2"  hits="0"  branch="false" />
+	    <line number="3"  hits="11"  branch="false" />
+	    <line number="68"  hits="11"  branch="false" />
+	  </lines>
+	</class>
+	<class name="class2"  filename="src/app/actions.js"  line-rate="0.75"  branch-rate="0.75" >
+	  <methods>
+	  </methods>
+	  <lines>
+	    <line number="1"  hits="11"  branch="false" />
+	    <line number="2"  hits="0"  branch="false" />
+	    <line number="3"  hits="11"  branch="false" />
+	    <line number="68"  hits="11"  branch="false" />
+	  </lines>
+	</class>
+      </classes>
+    </package>
+    <package name="package2"  line-rate="0.75"  branch-rate="0.75" >
+      <classes>
+	<class name="class3"  filename="src/app/actions.js"  line-rate="0.75"  branch-rate="0.75" >
+	  <methods>
+	  </methods>
+	  <lines>
+	    <line number="1"  hits="11"  branch="false" />
+	    <line number="2"  hits="0"  branch="false" />
+	    <line number="3"  hits="11"  branch="false" />
+	    <line number="68"  hits="11"  branch="false" />
+	  </lines>
+	</class>
+      </classes>
+    </package>
+  </packages>
+</coverage>

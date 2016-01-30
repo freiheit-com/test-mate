@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
+<coverage>
+  <sources>
+    <source>/home/docker/project</source>
+  </sources>
+  <packages>
+    <package name="package">
+      <classes>
+	<class name="actions.js"  filename="src/app/actions.js">
+	  <methods>
+	  </methods>
+	  <lines>
+	    <line number="1"  hits="11"  branch="false" />
+	    <line number="2"  hits="0"  branch="false" />
+	    <line number="3"  hits="11"  branch="false" />
+	    <line number="68"  hits="11"  branch="false" />
+	  </lines>
+	</class>
+      </classes>
+    </package>
+  </packages>
+</coverage>

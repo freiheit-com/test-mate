@@ -5,7 +5,8 @@
             :url "https://www.gnu.org/licenses/agpl-3.0.html"}
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [clj-http "2.0.0"]
-                 [cheshire "5.5.0"]]
+                 [cheshire "5.5.0"]
+                 [org.clojure/data.zip "0.1.1"]]
   :aot :all
   :main test-mate.core
   :jvm-opts ["-Xss8m"]) ;workaround: big jacoco files need a lot of stack -> rewrite aggregation with tail recursion
