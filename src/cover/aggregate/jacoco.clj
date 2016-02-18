@@ -6,9 +6,12 @@
 
 (def pack-name (comp :name :attrs))
 
+(defn- is-package [elem]
+  (= (:tag elem) :package))
+
 (defn- package-starts-with [prefix package-xml]
   (or (= prefix special-root-package)
-      (and (= (:tag package-xml) :package)
+      (and (is-package package-xml)
            (.startsWith (pack-name package-xml) prefix))))
 
 (defn- covered-lines [attrs]
@@ -16,24 +19,38 @@
         covered (Integer/valueOf (:covered attrs))]
     [covered (+ missed covered)]))
 
-(defn- line-counter? [counter]
+(defn- line-counter [counter]
   (when (and (= (:tag counter) :counter)
              (= (:type (:attrs counter)) "LINE"))
     (covered-lines (:attrs counter))))
 
 (defn- find-line-counter [counters]
-  (or (some line-counter? counters)
+  (or (some line-counter counters)
       neutral-count))
+
+(defn- integer-of [val]
+  (if val (Integer/valueOf val) 0))
+
+(defn- parse-legacy-line-counter [val]
+  (let [match (re-find #"\((\d+)/(\d+)\)" val)]
+    [(integer-of (nth match 1)) (integer-of (nth match 2))]))
+
+;<coverage type="line, %" value="96% (186/193)"></coverage>
+(defn- line-counter-legacy-format [counter]
+  (if (.startsWith (-> counter :attrs :type) "line")
+    (parse-legacy-line-counter (-> counter :attrs :value))
+    neutral-count))
 
 (def sum-count (partial map +))
 
 (defn- sum-counts [counts]
   (reduce sum-count neutral-count counts))
 
-(defn- aggregate-line-coverage [{:keys [tag content]}]
-  (if (= tag :method)
-    (find-line-counter content)
-    (sum-counts (map aggregate-line-coverage content))))
+(defn- aggregate-line-coverage [decl]
+  (let [{:keys [tag content]} decl]
+    (cond (= tag :method) (find-line-counter content)
+          (= tag :coverage) (line-counter-legacy-format decl)
+          :else (sum-counts (map aggregate-line-coverage content)))))
 
 (defn- percentage [lines covered]
   (if (= lines 0)
@@ -54,8 +71,11 @@
                               readable))
       (assoc aggregation package-name {}))))
 
-(def report-packages (comp vec rest :content))
-
+(defn report-packages [doc]
+  "Extract packages defs from file (detects the old and new emma format)"
+  (let [first-tag (-> doc :content first :tag)]
+    (cond (= :sessioninfo first-tag) (-> doc :content rest vec)
+          (= :stats first-tag) (vec (filter is-package (-> doc :content rest first :content first :content))))))
 
 (defn aggregate [packages file]
   (let [report-packages (report-packages (reader/read-report file))]
