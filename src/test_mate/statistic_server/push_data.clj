@@ -15,7 +15,8 @@
     (client/put publish-coverage-url {:body (cheshire/generate-string data)
                                       :insecure? true
                                       :content-type :json
-                                      :headers {"auth-token" (config/publish-auth-token)}})))
+                                      :headers {"auth-token" (config/publish-auth-token)}})
+    (println "Successfully pushed " data " to " publish-coverage-url)))
 
 (defn- put-project [project-def]
   (try
