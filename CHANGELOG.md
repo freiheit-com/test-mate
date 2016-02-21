@@ -2,7 +2,8 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [0.5.0] - 2016-02-21
+- added log output to the statistic-server publish-coverage command
 - legacy emma xml support (implemented for cloverage output)
 
 ## [0.4.1] - 2016-01-25
