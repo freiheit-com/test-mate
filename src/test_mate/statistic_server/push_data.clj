@@ -1,6 +1,7 @@
 (ns test-mate.statistic-server.push-data
   (:require [clj-http.client :as client]
             [test-mate.config :as config]
+            [test-mate.cmd :as command]
             [cover.parse :as parse]
             [cheshire.core :as cheshire]
             [clojure.edn :as edn]))
@@ -48,4 +49,4 @@
   "Multiplex function for statistic-server commands"
   (cond (= cmd "publish-coverage") (publish-statistic-data (first args) (second args))
         (= cmd "add-project") (add-project (first args))
-        :else (println "unknown statistic-server command: " cmd)))
+        :else (command/exit-with-usage (str "unknown statistic-server command: " cmd))))

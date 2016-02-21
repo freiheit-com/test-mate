@@ -7,6 +7,7 @@
                  [clj-http "2.0.0"]
                  [cheshire "5.5.0"]
                  [org.clojure/data.zip "0.1.1"]]
+  :profiles {:dev {:dependencies [[midje "1.8.3"]]}}
   :aot :all
   :main test-mate.core
   :jvm-opts ["-Xss8m"]) ;workaround: big jacoco files need a lot of stack -> rewrite aggregation with tail recursion

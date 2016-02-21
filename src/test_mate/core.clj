@@ -5,6 +5,10 @@
         [git :as git])
   (:gen-class))
 
+(defn exit-with-usage [message]
+  ;TODO print usage :)
+  (println message))
+
 (defn -main [& main-args]
   (let [command (first main-args)
         args (rest main-args)]
