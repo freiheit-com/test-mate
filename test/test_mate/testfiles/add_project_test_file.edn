@@ -1,0 +1,4 @@
+[{:project "test" :subproject "sub" :language "clojure"}
+ {:project "test2" :subproject "sub2" :language "clojure" :skip true}
+ {:project "test3" :subproject "sub3" :language "clojure"}
+ {:project "test4" :subproject "sub4" :language "java" :additional-key "ignored"}]

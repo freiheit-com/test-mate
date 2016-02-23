@@ -9,7 +9,6 @@
 (def publish-coverage-url (str (config/statistic-server-url) "/publish/coverage"))
 (def add-project-url (str (config/statistic-server-url) "/meta/project"))
 
-
 (defn- send-data [coverage-stats project-name]
   (let [coverage (select-keys coverage-stats [:covered :lines])
         data (merge coverage project-name)]
@@ -20,14 +19,15 @@
     (println "Successfully pushed " data " to " publish-coverage-url)))
 
 (defn- put-project [project-def]
-  (try
-    (let [put-result (client/put add-project-url {:body (cheshire/generate-string project-def)
-                                                  :insecure? true
-                                                  :content-type :json
-                                                  :headers {"auth-token" (config/meta-auth-token)}})]
-       {:status (:status put-result) :project-def project-def})
-    (catch clojure.lang.ExceptionInfo e {:status (:status (ex-data e))
-                                         :project-def project-def})))
+  (let [put-data (select-keys project-def [:project :subproject :language])]
+    (try
+      (let [put-result (client/put add-project-url {:body (cheshire/generate-string put-data)
+                                                    :insecure? true
+                                                    :content-type :json
+                                                    :headers {"auth-token" (config/meta-auth-token)}})]
+          {:status (:status put-result) :project-def project-def})
+      (catch clojure.lang.ExceptionInfo e {:status (:status (ex-data e))
+                                           :project-def project-def}))))
 (defn- handle-project [project-def]
   (if (:skip project-def)
     {:status :skipped :project-def project-def}
