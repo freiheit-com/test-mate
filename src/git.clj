@@ -2,8 +2,7 @@
   (:require [clojure.java.shell :refer [sh]]
             [clojure.string     :as string :refer [split-lines]]))
 
-
-(defn git-log-cmd [file git-repo]
+(defn- git-log-cmd [file git-repo]
   ["git" "--no-pager" "log" "--format='%h %s'" "--no-merges"
    file
    :dir git-repo])

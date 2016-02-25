@@ -9,6 +9,9 @@
 (def publish-coverage-url (str (config/statistic-server-url) "/publish/coverage"))
 (def add-project-url (str (config/statistic-server-url) "/meta/project"))
 
+(defn- only-project-data [m]
+  (select-keys m [:project :subproject :language]))
+
 (defn- send-data [coverage-stats project-name]
   (let [coverage (select-keys coverage-stats [:covered :lines])
         data (merge coverage project-name)]
@@ -19,7 +22,7 @@
     (println "Successfully pushed " data " to " publish-coverage-url)))
 
 (defn- put-project [project-def]
-  (let [put-data (select-keys project-def [:project :subproject :language])]
+  (let [put-data (only-project-data project-def)]
     (try
       (let [put-result (client/put add-project-url {:body (cheshire/generate-string put-data)
                                                     :insecure? true
@@ -38,8 +41,9 @@
     (println (:status result) " -> "(:project-def result))))
 
 (defn publish-statistic-data [coverage-file project-data]
-  (send-data (parse/stats coverage-file)
-             (merge (config/default-project) (edn/read-string project-data))))
+  (let [project-def-supplied (only-project-data (edn/read-string project-data))]
+    (send-data (parse/stats coverage-file)
+               (merge (config/default-project) project-def-supplied))))
 
 (defn add-project [project-file]
   (let [projects-to-add (edn/read-string (slurp project-file))]

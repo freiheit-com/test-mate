@@ -1,18 +1,14 @@
 (ns test-mate.core
-  (:use cover.parse
-        analysis.test-need
-        test-mate.statistic-server.push-data
-        [git :as git])
+  (:require [analysis.test-need :as test-need]
+            [cover.parse :as cover]
+            [test-mate.statistic-server.push-data :as statistic-server]
+            [test-mate.cmd :as cmd])
   (:gen-class))
-
-(defn exit-with-usage [message]
-  ;TODO print usage :)
-  (println message))
 
 (defn -main [& main-args]
   (let [command (first main-args)
         args (rest main-args)]
-    (cond (= command "aggregate") (println "aggregate: " (cover.parse/aggregate (first args) (rest args)))
-          (= command "test-need") (print-analyse-test-need (first args) (second args))
-          (= command "statistic-server") (push-data args)
-          :else (println "unknown command: " command))))
+    (cond (= command "aggregate") (println "aggregate: " (cover/aggregate (first args) (rest args)))
+          (= command "test-need") (test-need/print-analyse-test-need (first args) (second args))
+          (= command "statistic-server") (statistic-server/push-data args)
+          :else (cmd/exit-with-usage (str "unknown command: " command)))))
