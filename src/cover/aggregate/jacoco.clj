@@ -9,10 +9,9 @@
 (defn- is-package [elem]
   (= (:tag elem) :package))
 
-(defn- package-starts-with [prefix package-xml]
-  (or (= prefix special-root-package)
-      (and (is-package package-xml)
-           (.startsWith (pack-name package-xml) prefix))))
+(defn- package-matches [re package-xml]
+  (or (= re special-root-package) ; legacy support, treat "/" as #".*"
+      (boolean (re-matches re (pack-name package-xml)))))
 
 (defn- covered-lines [attrs]
   (let [missed (Integer/valueOf (:missed attrs))
@@ -62,14 +61,14 @@
    :lines lines
    :percentage (percentage lines covered)})
 
-(defn- do-aggregate [report-packages aggregation package-name]
-  (let [filtered (filter (partial package-starts-with package-name) report-packages)]
+(defn- do-aggregate [report-packages aggregation package-pattern]
+  (let [filtered (filter (partial package-matches package-pattern) report-packages)]
     (if (not-empty filtered)
       (assoc aggregation
-             package-name (-> {:content filtered}
-                              aggregate-line-coverage
-                              readable))
-      (assoc aggregation package-name {}))))
+             (.toString package-pattern) (-> {:content filtered}
+                                             aggregate-line-coverage
+                                             readable))
+      (assoc aggregation (.toString package-pattern) {}))))
 
 (defn report-packages [doc]
   "Extract packages defs from file (detects the old and new emma format)"
