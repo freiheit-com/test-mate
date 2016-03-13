@@ -1,6 +1,6 @@
 (ns test-mate.analysis.test-need-test
   (:require [clojure.test :refer :all]
-            [analysis.test-need :refer :all]))
+            [test-mate.analysis.test-need :refer :all]))
 
 (deftest should-sort-by-most-uncovered-lines
   (is (= (analyse-test-need-coverage "test/cover/testfiles/jacoco/class_coverage.xml")

@@ -2,7 +2,7 @@
   (:require [midje.sweet      :refer :all]
             [test-mate.cmd :as cmd]
             [cover.parse :as cover]
-            [analysis.test-need :as test-need]
+            [test-mate.analysis.analysis-core :as analyse]
             [test-mate.statistic-server.push-data :as statistic-server]
             [test-mate.core :refer :all]))
 
@@ -17,10 +17,10 @@
     (provided
       (cover/aggregate ..coverage-file.. [..p1.. ..p2..]) => irrelevant))
 
-  (fact "should call test-need on test-need command"
-    (-main "test-need" ..coverage-file.. ..repo-path..) => irrelevant
+  (fact "should call analysis core on analyse command"
+    (-main "analyse" ..sub-command1.. ..arg1.. ..arg2..) => irrelevant
     (provided
-      (test-need/print-analyse-test-need ..coverage-file.. ..repo-path..) => irrelevant))
+      (analyse/analyse [..sub-command1.. ..arg1.. ..arg2..]) => irrelevant))
 
   (fact "should call push-data on statistic-server command"
     (-main "statistic-server" ..sub-command1.. ..sub-command2..) => irrelevant

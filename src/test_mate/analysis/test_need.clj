@@ -33,9 +33,9 @@
           (take n)))))
 
 (defn analyse-test-need [coverage-file git-repo]
-  (->> coverage-file
-       analyse-test-need-coverage
-       (join-bugfix-commit-data git-repo)))
+  (println (->> coverage-file
+                analyse-test-need-coverage
+                (join-bugfix-commit-data git-repo))))
 
 (defn- bugfix-per-uncovered-line [{:keys [bugfixes uncovered]}]
   (if (= 0 uncovered)
@@ -47,9 +47,8 @@
     (println line)))
 
 (defn- test-need-result [result]
-  (str (:class result) " has" (:uncovered result) " uncovered lines,
-        \tit took " (:commits result) " commits and " (:bugfixes result) " bugfixes to produce this class
-        \tgiving it a bugfix/uncovered line ratio of: " (double (bugfix-per-uncovered-line result)) "\n"))
+  (str (:class result) " has" (:uncovered result) " uncovered lines,\tit took "
+       (:commits result) " commits and " (:bugfixes result) " bugfixes to produce this class \tgiving it a bugfix/uncovered line ratio of: " (double (bugfix-per-uncovered-line result)) "\n"))
 
 (defn- suspense-dots [limit all-count]
   (str "... only " limit "/" all-count " shown"))

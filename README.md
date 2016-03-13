@@ -73,6 +73,6 @@ test-mate automatically infers the coverage format from `coverage_file`. Current
 
 ## test-need
 
-    test-mate test-need <path/to/jacoco_coverage.xml> <path/to/git/repo>
+    test-mate analysis test-need <path/to/jacoco_coverage.xml> <path/to/git/repo>
 
-TODO: Describe test-need analysis?
+TODO: Describe test-need analysis in detail
