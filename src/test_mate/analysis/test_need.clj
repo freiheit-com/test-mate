@@ -1,4 +1,4 @@
-(ns analysis.test-need
+(ns test-mate.analysis.test-need
   (:require [cover.aggregate.jacoco :as jacoco]
             [git                    :as git]))
 
