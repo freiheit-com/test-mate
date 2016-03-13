@@ -58,9 +58,12 @@ a file with all projects in the statistic server and only append new projects).
 
 # Coverage data Aggregation
 
-    test-mate aggregate <path/to/coverage_file> my/package/one my/package/two ...
+    test-mate aggregate <path/to/coverage_file> package-regex-1 package-regex-2 ...
 
-Note: You can supply the special package "/" to aggregate the overall coverage result. Sub-package aggregation is not supported by all coverage formats.
+This command aggregates coverage data for each `package-regex` (Java regex syntax) and prints the result in EDN-format to the
+console.
+
+Note: You can supply the special package "/" (or use the regex ".*") to aggregate the overall coverage result. Sub-package aggregation is not supported by all coverage formats.
 
 test-mate automatically infers the coverage format from `coverage_file`. Currently the following formats are supported:
 - Emma/Jacoco (also supports the old coverage format, as written bei cloverage)
