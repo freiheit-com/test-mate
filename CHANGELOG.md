@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+##[0.6.1] - 2016-03-14
+### Fixed
+- jacoco aggregation does not convert packages to pattern
+
 ##[0.6.0] - 2016-03-13
 ### Changed
 - aggregate coverage now allows regular expressions (jacoco-format only)

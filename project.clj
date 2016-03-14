@@ -1,4 +1,4 @@
-(defproject test-mate "0.6.0"
+(defproject test-mate "0.6.1"
   :description "mate for testing needs"
   :url "https://github.com/freiheit-com/test-mate"
   :license {:name "GPLv3"

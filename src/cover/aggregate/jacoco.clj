@@ -76,9 +76,15 @@
     (cond (= :sessioninfo first-tag) (-> doc :content rest vec)
           (= :stats first-tag) (vec (filter is-package (-> doc :content rest first :content first :content))))))
 
+(defn- as-pattern [string]
+  (if (= string special-root-package)
+    string
+    (re-pattern string)))
+
 (defn aggregate [packages file]
-  (let [report-packages (report-packages (reader/read-report file))]
-    (reduce (partial do-aggregate report-packages) {} packages)))
+  (let [report-packages (report-packages (reader/read-report file))
+        package-pattern (map as-pattern packages)]
+    (reduce (partial do-aggregate report-packages) {} package-pattern)))
 
 (defn- assoc-class-coverage [aggregation class]
   (assoc aggregation (:name (:attrs class)) (readable (aggregate-line-coverage class))))

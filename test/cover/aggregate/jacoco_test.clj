@@ -60,10 +60,9 @@
   (is (= (aggregate (list "/") _class-example) {"/" {:covered 210 :lines 310 :percentage 0.6774193548387097}})))
 
 (deftest should-allow-combine-of-all-aggregate-with-others
-  (is (= (aggregate (list "/" #"com/freiheit/my/package.*") _complex)
+  (is (= (aggregate (list "/" "com/freiheit/my/package.*") _complex)
          {"/" {:covered 657 :lines 1142 :percentage 0.5753064798598949}
           "com/freiheit/my/package.*" {:covered 657 :lines 1142 :percentage 0.5753064798598949}})))
-
 
 ;; stats
 
@@ -84,3 +83,9 @@
   "/foo/barr"      #"/foo/ba(r)+"     true
   "/foo/bar"       #"/foo/ba(b)+"     false
   "foo"            "/"                true)
+
+(facts "as-pattern"
+  (fact "should not convert to pattern if special root"
+    (#'cover.aggregate.jacoco/as-pattern "/") => "/")
+  (fact "should convert other inputs to pattern"
+    (#'cover.aggregate.jacoco/as-pattern ".*") => #".*"))
