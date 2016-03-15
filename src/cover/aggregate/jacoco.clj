@@ -11,7 +11,8 @@
 
 (defn- package-matches [re package-xml]
   (or (= re special-root-package) ; legacy support, treat "/" as #".*"
-      (boolean (re-matches re (pack-name package-xml)))))
+      (boolean (and (is-package package-xml)
+                    (re-matches re (pack-name package-xml))))))
 
 (defn- covered-lines [attrs]
   (let [missed (Integer/valueOf (:missed attrs))

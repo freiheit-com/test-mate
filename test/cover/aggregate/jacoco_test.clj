@@ -70,9 +70,13 @@
   (is (= {:covered 657 :lines 1142 :percentage 0.5753064798598949}
          (stats _complex))))
 
+(facts "about package name matching"
+  (fact "should match not if no package"
+    (#'cover.aggregate.jacoco/package-matches #".*" {}) => false))
+
 (tabular
   (fact "should match package name correctly"
-    (#'cover.aggregate.jacoco/package-matches ?regex {:attrs {:name ?name}}) => ?matches)
+    (#'cover.aggregate.jacoco/package-matches ?regex {:attrs {:name ?name} :tag :package}) => ?matches)
   ?name            ?regex             ?matches
   "foo"            #"f.*"             true
   "foo"            #"foobar"          false

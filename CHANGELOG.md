@@ -4,9 +4,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+##[0.6.2] - 2016-03-15
+### Fixed
+- regex matching for jacoco aggregate not working correctly
+
 ##[0.6.1] - 2016-03-14
 ### Fixed
 - jacoco aggregation does not convert packages to pattern
+### Changed
+- refactored analysis module to be inside test-mate module
 
 ##[0.6.0] - 2016-03-13
 ### Changed
