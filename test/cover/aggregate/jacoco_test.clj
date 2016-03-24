@@ -93,3 +93,15 @@
     (#'cover.aggregate.jacoco/as-pattern "/") => "/")
   (fact "should convert other inputs to pattern"
     (#'cover.aggregate.jacoco/as-pattern ".*") => #".*"))
+
+(facts "packages-of-report"
+  (fact "should extract from new format if first tag is sessioninfo"
+    (#'cover.aggregate.jacoco/packages-of-report {:content [{:tag :sessioninfo}]}) => :read_new_format
+    (provided
+      (#'cover.aggregate.jacoco/extract-from-new-emma-report anything) => :read_new_format :times 1))
+  (fact "should extract from legacy format if first tag is stats"
+    (#'cover.aggregate.jacoco/packages-of-report {:content [{:tag :stats}]}) => :read_legacy_format
+    (provided
+      (#'cover.aggregate.jacoco/extract-from-legacy-emma-report anything) => :read_legacy_format :times 1))
+  (fact "should throw exception if tag is unknown"
+    (#'cover.aggregate.jacoco/packages-of-report {:content [{:tag :unknown}]}) => (throws Exception)))

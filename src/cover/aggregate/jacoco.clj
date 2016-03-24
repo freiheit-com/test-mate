@@ -71,11 +71,18 @@
                                              readable))
       (assoc aggregation (.toString package-pattern) {}))))
 
-(defn report-packages [doc]
+(defn- extract-from-new-emma-report [doc]
+  (-> doc :content rest vec))
+
+(defn- extract-from-legacy-emma-report [doc]
+  (vec (filter is-package (-> doc :content rest first :content first :content))))
+
+(defn- packages-of-report [doc]
   "Extract packages defs from file (detects the old and new emma format)"
   (let [first-tag (-> doc :content first :tag)]
-    (cond (= :sessioninfo first-tag) (-> doc :content rest vec)
-          (= :stats first-tag) (vec (filter is-package (-> doc :content rest first :content first :content))))))
+    (cond (= :sessioninfo first-tag) (extract-from-new-emma-report doc)
+          (= :stats first-tag) (extract-from-legacy-emma-report doc)
+          :else (throw (Exception. "unknown jacoco/emma coverage format")))))
 
 (defn- as-pattern [string]
   (if (= string special-root-package)
@@ -83,7 +90,7 @@
     (re-pattern string)))
 
 (defn aggregate [packages file]
-  (let [report-packages (report-packages (reader/read-report file))
+  (let [report-packages (packages-of-report (reader/read-report file))
         package-pattern (map as-pattern packages)]
     (reduce (partial do-aggregate report-packages) {} package-pattern)))
 
@@ -97,7 +104,7 @@
 
 (defn aggregate-class-coverage [file]
   "Aggregate coverage data for each class in report"
-  (let [report-packages (report-packages (reader/read-report file))]
+  (let [report-packages (packages-of-report (reader/read-report file))]
     (reduce do-aggregate-classes {} report-packages)))
 
 (defn stats
