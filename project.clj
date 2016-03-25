@@ -3,7 +3,7 @@
   :url "https://github.com/freiheit-com/test-mate"
   :license {:name "GPLv3"
             :url "https://www.gnu.org/licenses/agpl-3.0.html"}
-  :dependencies [[org.clojure/clojure "1.7.0"]
+  :dependencies [[org.clojure/clojure "1.8.0"]
                  [clj-http "2.0.0"]
                  [cheshire "5.5.0"]
                  [org.clojure/data.zip "0.1.1"]]
