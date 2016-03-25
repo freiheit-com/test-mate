@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+- update to clojure 1.8.0
 - tests added
 
 ##[0.6.2] - 2016-03-15

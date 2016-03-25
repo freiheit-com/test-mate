@@ -4,5 +4,5 @@
 
 (defn analyse [[cmd & args]]
   "Multiplex function for analysis commands"
-  (cond (= cmd "test-need") (test-need/analyse-test-need (first args) (second args))
+  (cond (= cmd "test-need") (test-need/analyse-test-need args)
         :else (command/exit-with-usage (str "unknown analysis: " cmd))))

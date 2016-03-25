@@ -9,8 +9,7 @@
     (analyse ["unknown-analysis"]) => irrelevant
     (provided
       (command/exit-with-usage "unknown analysis: unknown-analysis") => nil :times 1))
-
   (fact "should call test-need"
-    (analyse ["test-need" ..coverage-file.. ..git-dir..]) => irrelevant
+    (analyse ["test-need" ..arg1.. ..arg2..]) => irrelevant
     (provided
-      (test-need/analyse-test-need ..coverage-file.. ..git-dir..) => nil :times 1)))
+      (test-need/analyse-test-need [..arg1.. ..arg2..]) => nil :times 1)))
