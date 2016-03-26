@@ -26,13 +26,14 @@
            :bugfixes (count (filter bugfix-commit? log)))))
 
 (defn- join-bugfix-commit-data [git-repo n coverage-data]
-  "Joins commit info to coverage data, takes only the first 1000 coverage data since the commit data retrieval
+  "Joins commit info to coverage data, takes only the first n coverage data since the commit data retrieval
   is very expensive"
   (->> coverage-data
        (map (partial add-commit-data git-repo))
        (take n)))
 
 (def +csv-header+ [["class" "commits" "bugfixes" "uncovered"]])
+
 (defn- extract-fields-for-csv [entry]
   [(:class entry) (.toString (:commits entry)) (.toString (:bugfixes entry)) (.toString (:uncovered entry))])
 
@@ -63,13 +64,18 @@
     :parse-fn #(Integer/parseInt %)
     :validate [#(>= % 0) "Must be a number > 0"]]])
 
-(defn- exit-with-usage [msg]
+(defn- exit []
+  (System/exit -1))
+
+(defn- exit-with-usage [msg errs]
+  (when errs
+    (println "error" errs "\n"))
   (println "test-need analysis options:")
   (println msg)
-  (System/exit -1))
+  (exit))
 
 (defn analyse-test-need [args]
   (let [{:keys [options arguments errors summary]} (cli/parse-opts args cli-options)]
     (cond
-      (or (not (empty? arguments)) errors) (exit-with-usage summary)
+      (or (not (empty? arguments)) errors) (exit-with-usage summary errors)
       :else (do-analyse options))))

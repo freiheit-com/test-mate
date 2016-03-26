@@ -3,12 +3,11 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
-## Added
+### Added
 - some more tests added
-## Changed
+### Changed
 - test-need analysis not outputs csv (instead of console output)
 - update to clojure 1.8.0
-
 
 ##[0.6.2] - 2016-03-15
 ### Fixed
