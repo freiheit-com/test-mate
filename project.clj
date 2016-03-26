@@ -7,7 +7,8 @@
                  [clj-http "2.0.0"]
                  [cheshire "5.5.0"]
                  [org.clojure/data.zip "0.1.1"]
-                 [org.clojure/tools.cli "0.3.3"]]
+                 [org.clojure/tools.cli "0.3.3"]
+                 [clojure-csv/clojure-csv "2.0.2"]]
   :profiles {:dev {:dependencies [[midje "1.8.3"]]}}
   :aot :all
   :main test-mate.core

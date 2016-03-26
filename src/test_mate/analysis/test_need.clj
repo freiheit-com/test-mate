@@ -1,7 +1,8 @@
 (ns test-mate.analysis.test-need
   (:require [cover.aggregate.jacoco :as jacoco]
             [git                    :as git]
-            [clojure.tools.cli      :as cli]))
+            [clojure.tools.cli      :as cli]
+            [clojure-csv.core       :as csv]))
 
 (defn- coverage-per-line [[file {:keys [lines covered]}]]
   {:class file
@@ -31,45 +32,23 @@
        (map (partial add-commit-data git-repo))
        (take n)))
 
-(defn- bugfix-per-uncovered-line [{:keys [bugfixes uncovered]}]
-  (if (= 0 uncovered)
-    0
-    (/ bugfixes uncovered)))
+(def +csv-header+ [["class" "commits" "bugfixes" "uncovered"]])
+(defn- extract-fields-for-csv [entry]
+  [(:class entry) (.toString (:commits entry)) (.toString (:bugfixes entry)) (.toString (:uncovered entry))])
 
-(defn print-lines [lines]
-  (doseq [line lines]
-    (println line)))
-
-#_(defn- test-need-result [result]
-    (str (:class result) " has" (:uncovered result) " uncovered lines,\tit took "
-         (:commits result) " commits and " (:bugfixes result) " bugfixes to produce this class \tgiving it a bugfix/uncovered line ratio of: " (double (bugfix-per-uncovered-line result)) "\n"))
-
-#_(defn- suspense-dots [limit all-count]
-   (str "... only " limit "/" all-count " shown"))
-
-#_(defn print-analyse-test-need [coverage-file git-repo & [result-count]]
-   "Same as function without print, but formats result in a readable way"
-   (let [n (or result-count 20)]
-        result (analyse-test-need coverage-file git-repo)
-        by-bugfix (reverse (sort-by bugfix-per-uncovered-line result))
-    (print-lines
-     [["Ranked purely by most uncovered lines, you should write tests for these classes: "
-       (map test-need-result (take n result))
-       (suspense-dots n (count result))
-       "\n"
-       "Considering bugfixes for uncovered lines, you should write tests for these classes: "
-       (map test-need-result (take n by-bugfix))
-       (suspense-dots n (count by-bugfix))]])))
-
-;; new (work-in-progress)
+(defn- result-as-csv [result]
+  (map extract-fields-for-csv result))
 
 (defn- do-analyse [opts]
   (let [coverage-file (:coverage-file opts)
-        git-repo (:git-repo opts)]
-    ;TODO export this result to csv
-    (println (->> coverage-file
-                  analyse-test-need-coverage
-                  (join-bugfix-commit-data git-repo (:num-commits opts))))))
+        git-repo (:git-repo opts)
+        output-file (:output opts)]
+    (spit output-file (csv/write-csv
+                         (concat +csv-header+
+                            (->> coverage-file
+                                 analyse-test-need-coverage
+                                 (join-bugfix-commit-data git-repo (:num-commits opts))
+                                 result-as-csv))))))
 
 (def cli-options
   [["-c" "--coverage-file FILE" "coverage file (emma/jacoco format)"
