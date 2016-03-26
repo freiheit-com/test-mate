@@ -3,6 +3,8 @@
             [test-mate.analysis.test-need :refer :all]
             [midje.sweet :refer :all]))
 
+(def +minimal-ok-args+ ["-c" "coverage-file/path.xml" "-r" "path/to/repo"])
+
 (facts "about analyse-test-need-coverage"
   (fact "should sort by most uncovered lines"
     (analyse-test-need-coverage "test/cover/testfiles/jacoco/class_coverage.xml") =>
@@ -25,10 +27,14 @@
     (provided
       (#'test-mate.analysis.test-need/exit-with-usage anything) => nil :times 1))
   (fact "should print usage if unknown argument is given"
-    (analyse-test-need ["-c" "coverage-file/path.xml" "-r" "path/to/repo" "--unkown-argument"]) => irrelevant
+    (analyse-test-need (conj +minimal-ok-args+ "--unkown-argument")) => irrelevant
+    (provided
+      (#'test-mate.analysis.test-need/exit-with-usage anything) => nil :times 1))
+  (fact "should print usage if num-commits < 0"
+    (analyse-test-need (conj +minimal-ok-args+ "-n -1")) => irrelevant
     (provided
       (#'test-mate.analysis.test-need/exit-with-usage anything) => nil :times 1))
   (fact "should start analysis if all args are given"
-    (analyse-test-need ["-c" "coverage-file/path.xml" "-r" "path/to/repo"]) => irrelevant
+    (analyse-test-need +minimal-ok-args+) => irrelevant
     (provided
       (#'test-mate.analysis.test-need/do-analyse anything) => nil :times 1)))

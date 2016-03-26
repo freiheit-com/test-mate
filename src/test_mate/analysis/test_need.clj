@@ -24,14 +24,12 @@
            :commits (count log)
            :bugfixes (count (filter bugfix-commit? log)))))
 
-(defn- join-bugfix-commit-data
+(defn- join-bugfix-commit-data [git-repo n coverage-data]
   "Joins commit info to coverage data, takes only the first 1000 coverage data since the commit data retrieval
   is very expensive"
-  ([git-repo coverage-data & [commit-count]]
-   (let [n (or commit-count 1000)]
-     (->> coverage-data
-          (map (partial add-commit-data git-repo))
-          (take n)))))
+  (->> coverage-data
+       (map (partial add-commit-data git-repo))
+       (take n)))
 
 (defn- bugfix-per-uncovered-line [{:keys [bugfixes uncovered]}]
   (if (= 0 uncovered)
@@ -71,7 +69,7 @@
     ;TODO export this result to csv
     (println (->> coverage-file
                   analyse-test-need-coverage
-                  (join-bugfix-commit-data git-repo)))))
+                  (join-bugfix-commit-data git-repo (:num-commits opts))))))
 
 (def cli-options
   [["-c" "--coverage-file FILE" "coverage file (emma/jacoco format)"
@@ -80,7 +78,11 @@
     :missing "git-repo"]
    ["-o" "--output FILE" "output file (csv format)"
     :missing "output file"
-    :default "./test_need_out.csv"]])
+    :default "./test_need_out.csv"]
+   ["-n" "--num-commits NUM" "number of commits to consider (this affects runtime)"
+    :default 1000
+    :parse-fn #(Integer/parseInt %)
+    :validate [#(>= % 0) "Must be a number > 0"]]])
 
 (defn- exit-with-usage [msg]
   (println "test-need analysis options:")
