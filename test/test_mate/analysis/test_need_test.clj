@@ -8,8 +8,9 @@
 (facts "about analyse-test-need-coverage"
   (fact "should sort by most uncovered lines"
     (analyse-test-need-coverage "test/cover/testfiles/jacoco/class_coverage.xml") =>
-      '({:class "com/freiheit/foo/Bar" :uncovered 90} {:class "com/freiheit/MyClass1"  :uncovered 10}
-        {:class "com/Bar2" :uncovered 0})))
+      '({:class "com/freiheit/foo/Bar" :uncovered 90 :lines 100}
+        {:class "com/freiheit/MyClass1" :uncovered 10 :lines 10}
+        {:class "com/Bar2" :uncovered 0 :lines 200})))
 
 (facts "about bugfix-commit? classification"
   (fact "should classify log line with fix as bugfix"
@@ -47,13 +48,16 @@
     (provided
       (#'test-mate.analysis.test-need/add-commit-data ..git-repo.. anything) => ..added-commit-data.. :times 3)))
 
+
 (facts "about result-as-csv"
   (fact "should be empty if no result"
     (#'test-mate.analysis.test-need/result-as-csv []) => [])
-  (fact "should convert to strings"
+  (fact "should convert to strings and add derived data"
     (#'test-mate.analysis.test-need/result-as-csv
-        [{:class "class" :commits 50 :bugfixes 4 :uncovered 666}
-         {:class "class2" :commits 1 :bugfixes 0 :uncovered 89}]) => [["class" "50" "4" "666"] ["class2" "1" "0" "89"]]))
+        [{:class "class" :commits 50 :bugfixes 4 :uncovered 666 :lines 1000}
+         {:class "class2" :commits 1 :bugfixes 0 :uncovered 89 :lines 113}]) =>
+                 [["class" "50" "4" "666" "1000" "" "0.334" "0.006" "0.08" "0.004"]
+                  ["class2" "1" "0" "89" "113" "" "0.2124" "0.0" "0.0" "0.0"]]))
 
 (facts "about do-analyse"
   (fact "should spit analysis output to file"
@@ -64,8 +68,8 @@
     (provided
       (#'test-mate.analysis.test-need/analyse-test-need-coverage ..coverage-file..) => ..coverage-data.. :times 1
       (#'test-mate.analysis.test-need/join-bugfix-commit-data ..git-repo.. ..num-commits.. ..coverage-data..) => ..added-coverage-data.. :times 1
-      (#'test-mate.analysis.test-need/result-as-csv ..added-coverage-data..) => [["class" "50" "4" "666"]] :times 1
-      (spit ..output-file.. "class,commits,bugfixes,uncovered\nclass,50,4,666\n") => irrelevant :times 1)))
+      (#'test-mate.analysis.test-need/result-as-csv ..added-coverage-data..) => [["class" "50" "4" "666" "987" "" "0.66" "0.01" "0.033" "1.89"]] :times 1
+      (spit ..output-file.. "class,commits,bugfixes,uncovered,lines,=>,coverage,bugfix/uncovered,bugfix/commit,bugfix/lines\nclass,50,4,666,987,,0.66,0.01,0.033,1.89\n") => irrelevant :times 1)))
 
 (facts "about analysis main function"
   (fact "should print usage if no repo given"

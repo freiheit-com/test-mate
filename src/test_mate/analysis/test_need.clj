@@ -6,7 +6,8 @@
 
 (defn- coverage-per-line [[file {:keys [lines covered]}]]
   {:class file
-   :uncovered (- lines covered)})
+   :uncovered (- lines covered)
+   :lines lines})
 
 (defn analyse-test-need-coverage [coverage-file]
   (->> coverage-file
@@ -32,13 +33,31 @@
        (map (partial add-commit-data git-repo))
        (take n)))
 
-(def +csv-header+ [["class" "commits" "bugfixes" "uncovered"]])
+(def +csv-header+ [["class" "commits" "bugfixes" "uncovered" "lines" "=>" "coverage" "bugfix/uncovered" "bugfix/commit" "bugfix/lines"]])
 
-(defn- extract-fields-for-csv [entry]
-  [(:class entry) (.toString (:commits entry)) (.toString (:bugfixes entry)) (.toString (:uncovered entry))])
+(defn- round-to-precision
+  "Round a double to the given precision (number of significant digits)"
+  [precision d]
+  (let [factor (Math/pow 10 precision)]
+    (/ (Math/round (* d factor)) factor)))
+
+;;  Anzahl Bugfixes / Uncovered-Lines
+(defn- calculate-derived-data [entry]
+  ["" ; => field (as separator in csv file)
+   (.toString (round-to-precision 4 (/ (- (:lines entry) (:uncovered entry)) (:lines entry)))) ;coverage
+   (.toString (round-to-precision 4 (/ (:bugfixes entry) (:uncovered entry))))
+   (.toString (round-to-precision 4 (/ (:bugfixes entry) (:commits entry))))
+   (.toString (round-to-precision 4 (/ (:bugfixes entry) (:lines entry))))])
+
+(defn- csv-fields [entry]
+  (let [csv-data [(:class entry) (.toString (:commits entry))
+                  (.toString (:bugfixes entry)) (.toString (:uncovered entry))
+                  (.toString (:lines entry))]
+        derived-data (calculate-derived-data entry)]
+    (vec (concat csv-data derived-data))))
 
 (defn- result-as-csv [result]
-  (map extract-fields-for-csv result))
+  (vec (map csv-fields result)))
 
 (defn- do-analyse [opts]
   (let [coverage-file (:coverage-file opts)
