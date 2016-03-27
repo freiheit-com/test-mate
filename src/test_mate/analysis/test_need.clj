@@ -33,7 +33,7 @@
        (map (partial add-commit-data git-repo))
        (take n)))
 
-(def +csv-header+ [["class" "commits" "bugfixes" "uncovered" "lines" "=>" "coverage" "bugfix/uncovered" "bugfix/commit" "bugfix/lines"]])
+(def +csv-header+ [["class" "commits" "bugfixes" "uncovered" "lines" "'=>" "coverage" "bugfix/uncovered" "bugfix/commit" "bugfix/lines"]])
 
 (defn- round-to-precision
   "Round a double to the given precision (number of significant digits)"
