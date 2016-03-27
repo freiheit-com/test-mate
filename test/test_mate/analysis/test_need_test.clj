@@ -28,13 +28,15 @@
 
 (facts "about add-commit-data"
   (fact "should add empty data if git log is empty"
-    (#'test-mate.analysis.test-need/add-commit-data ..git-repo.. {:class "TestClass"}) => {:class "TestClass" :commits 0 :bugfixes 0}
+    (#'test-mate.analysis.test-need/add-commit-data ..git-repo.. {:class "TestClass"}) => {:class "TestClass" :commits 0 :bugfixes 0 :last-change 0}
     (provided
-      (git/log ..git-repo.. "TestClass.java") => []))
+      (git/log ..git-repo.. "TestClass.java") => []
+      (git/last-commit-date ..git-repo.. "TestClass.java") => 0))
   (fact "should add data from log call"
-    (#'test-mate.analysis.test-need/add-commit-data ..git-repo.. {:class "TestClass"}) => {:class "TestClass" :commits 5 :bugfixes 2}
+    (#'test-mate.analysis.test-need/add-commit-data ..git-repo.. {:class "TestClass"}) => {:class "TestClass" :commits 5 :bugfixes 2 :last-change ..last-commit-date..}
     (provided
-      (git/log ..git-repo.. "TestClass.java") => +dummy-log+)))
+      (git/log ..git-repo.. "TestClass.java") => +dummy-log+
+      (git/last-commit-date ..git-repo.. "TestClass.java") => ..last-commit-date..)))
 
 (facts "about join-bugfix-commit-data"
   (fact "should return empty if num is 0"
@@ -48,18 +50,17 @@
     (provided
       (#'test-mate.analysis.test-need/add-commit-data ..git-repo.. anything) => ..added-commit-data.. :times 3)))
 
-
 (facts "about result-as-csv"
   (fact "should be empty if no result"
-    (#'test-mate.analysis.test-need/result-as-csv []) => [])
+    (#'test-mate.analysis.test-need/result-as-csv ..now.. []) => [])
   (fact "should convert to strings and add derived data"
-    (#'test-mate.analysis.test-need/result-as-csv
-        [{:class "class" :commits 50 :bugfixes 4 :uncovered 666 :lines 1000}
-         {:class "class2" :commits 1 :bugfixes 0 :uncovered 89 :lines 113}
-         {:class "class3" :commits 103 :bugfixes 26 :uncovered 230 :lines 233}]) =>
-                 [["class" "50" "4" "666" "1000" "" "0.334" "0.006" "0.08" "0.004"]
-                  ["class2" "1" "0" "89" "113" "" "0.2124" "0.0" "0.0" "0.0"]
-                  ["class3" "103" "26" "230" "233" "" "0.0129" "0.113" "0.2524" "0.1116"]]))
+    (#'test-mate.analysis.test-need/result-as-csv 1458817200
+        [{:class "class" :commits 50 :bugfixes 4 :uncovered 666 :lines 1000 :last-change 1458991995}
+         {:class "class2" :commits 1 :bugfixes 0 :uncovered 89 :lines 113 :last-change 0}
+         {:class "class3" :commits 103 :bugfixes 26 :uncovered 230 :lines 233 :last-change 1255691895}]) =>
+                 [["class" "50" "4" "666" "1000" "1458991995" "" "0.334" "0.006" "0.08" "0.004" "-2.0"]
+                  ["class2" "1" "0" "89" "113" "0" "" "0.2124" "0.0" "0.0" "0.0" "0.0"]
+                  ["class3" "103" "26" "230" "233" "1255691895" "" "0.0129" "0.113" "0.2524" "0.1116" "2351.0"]]))
 
 (facts "about do-analyse"
   (fact "should spit analysis output to file"
@@ -70,8 +71,8 @@
     (provided
       (#'test-mate.analysis.test-need/analyse-test-need-coverage ..coverage-file..) => ..coverage-data.. :times 1
       (#'test-mate.analysis.test-need/join-bugfix-commit-data ..git-repo.. ..num-commits.. ..coverage-data..) => ..added-coverage-data.. :times 1
-      (#'test-mate.analysis.test-need/result-as-csv ..added-coverage-data..) => [["class" "50" "4" "666" "987" "" "0.66" "0.01" "0.033" "1.89"]] :times 1
-      (spit ..output-file.. "class,commits,bugfixes,uncovered,lines,'=>,coverage,bugfix/uncovered,bugfix/commit,bugfix/lines\nclass,50,4,666,987,,0.66,0.01,0.033,1.89\n") => irrelevant :times 1)))
+      (#'test-mate.analysis.test-need/result-as-csv anything ..added-coverage-data..) => [["class" "50" "4" "666" "987" "1458991995" "" "0.66" "0.01" "0.033" "1.89" "33.0"]] :times 1
+      (spit ..output-file.. "class,commits,bugfixes,uncovered,lines,last-changed,'=>,coverage,bugfix/uncovered,bugfix/commit,bugfix/lines,days-last-update\nclass,50,4,666,987,1458991995,,0.66,0.01,0.033,1.89,33.0\n") => irrelevant :times 1)))
 
 (facts "about analysis main function"
   (fact "should print usage if no repo given"

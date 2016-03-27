@@ -20,11 +20,13 @@
   (.contains (.toLowerCase log-line) "fix"))
 
 (defn- add-commit-data [git-repo coverage-data]
-  (let [log (->> (str (:class coverage-data) ".java")
-                 (git/log git-repo))]
+  (let [file (str (:class coverage-data) ".java")
+        log  (git/log git-repo file)
+        last-change (git/last-commit-date git-repo file)]
     (assoc coverage-data
            :commits (count log)
-           :bugfixes (count (filter bugfix-commit? log)))))
+           :bugfixes (count (filter bugfix-commit? log))
+           :last-change last-change)))
 
 (defn- join-bugfix-commit-data [git-repo n coverage-data]
   "Joins commit info to coverage data, takes only the first n coverage data since the commit data retrieval
@@ -33,7 +35,7 @@
        (map (partial add-commit-data git-repo))
        (take n)))
 
-(def +csv-header+ [["class" "commits" "bugfixes" "uncovered" "lines" "'=>" "coverage" "bugfix/uncovered" "bugfix/commit" "bugfix/lines"]])
+(def +csv-header+ [["class" "commits" "bugfixes" "uncovered" "lines" "last-changed" "'=>" "coverage" "bugfix/uncovered" "bugfix/commit" "bugfix/lines" "days-last-update"]])
 
 (defn- round-to-precision
   "Round a double to the given precision (number of significant digits)"
@@ -41,34 +43,40 @@
   (let [factor (Math/pow 10 precision)]
     (/ (Math/round (* d factor)) factor)))
 
-;;  Anzahl Bugfixes / Uncovered-Lines
-(defn- calculate-derived-data [entry]
+(defn- last-changed [now entry]
+  (if (= (:last-change entry) 0)
+    now
+    (:last-change entry)))
+
+(defn- calculate-derived-data [now entry]
   ["" ; => field (as separator in csv file)
    (.toString (round-to-precision 4 (/ (- (:lines entry) (:uncovered entry)) (:lines entry)))) ;coverage
    (.toString (round-to-precision 4 (/ (:bugfixes entry) (:uncovered entry))))
    (.toString (round-to-precision 4 (/ (:bugfixes entry) (:commits entry))))
-   (.toString (round-to-precision 4 (/ (:bugfixes entry) (:lines entry))))])
+   (.toString (round-to-precision 4 (/ (:bugfixes entry) (:lines entry))))
+   (.toString (round-to-precision 0 (/ (- now (last-changed now entry)) (* 60 60 24))))])
 
-(defn- csv-fields [entry]
+(defn- csv-fields [now entry]
   (let [csv-data [(:class entry) (.toString (:commits entry))
                   (.toString (:bugfixes entry)) (.toString (:uncovered entry))
-                  (.toString (:lines entry))]
-        derived-data (calculate-derived-data entry)]
+                  (.toString (:lines entry)) (.toString (:last-change entry))]
+        derived-data (calculate-derived-data now entry)]
     (vec (concat csv-data derived-data))))
 
-(defn- result-as-csv [result]
-  (vec (map csv-fields result)))
+(defn- result-as-csv [now result]
+  (vec (map (partial csv-fields now) result)))
 
 (defn- do-analyse [opts]
   (let [coverage-file (:coverage-file opts)
         git-repo (:git-repo opts)
-        output-file (:output opts)]
+        output-file (:output opts)
+        now (/ (System/currentTimeMillis) 1000)]
     (spit output-file (csv/write-csv
                          (concat +csv-header+
                             (->> coverage-file
                                  analyse-test-need-coverage
                                  (join-bugfix-commit-data git-repo (:num-commits opts))
-                                 result-as-csv))))))
+                                 (result-as-csv now)))))))
 
 (def cli-options
   [["-c" "--coverage-file FILE" "coverage file (emma/jacoco format)"
