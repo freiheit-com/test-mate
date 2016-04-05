@@ -2,9 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [0.7.0] - 2016-04-05
 ### Added
 - command line argument for prefix in test-need analysis
+- better git handling in test-need analysis
 - some more tests added
 ### Changed
 - test-need analysis now outputs csv (instead of console output)
