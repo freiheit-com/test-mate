@@ -4,6 +4,7 @@
             [midje.sweet :refer :all]))
 
 (def +minimal-ok-args+ ["-c" "coverage-file/path.xml" "-r" "path/to/repo"])
+(def +optional-args+ ["-n" "100" "-o" "output/file.csv" "-p" "src/java"])
 
 (facts "about analyse-test-need-coverage"
   (fact "should sort by most uncovered lines"
@@ -28,27 +29,32 @@
 
 (facts "about add-commit-data"
   (fact "should add empty data if git log is empty"
-    (#'test-mate.analysis.test-need/add-commit-data ..git-repo.. {:class "TestClass"}) => {:class "TestClass" :commits 0 :bugfixes 0 :last-change 0}
+    (#'test-mate.analysis.test-need/add-commit-data ..git-repo.. ..prefix.. {:class "TestClass"}) => {:class "TestClass" :commits 0 :bugfixes 0 :last-change 0}
     (provided
-      (git/log ..git-repo.. "TestClass.java") => []
-      (git/last-commit-date ..git-repo.. "TestClass.java") => 0))
+      (git/log ..git-repo.. "..prefix../TestClass.java") => []
+      (git/last-commit-date ..git-repo.. "..prefix../TestClass.java") => 0))
+  (fact "should not add an / if already on end"
+    (#'test-mate.analysis.test-need/add-commit-data ..git-repo.. "has/atend/" {:class "TestClass"}) => {:class "TestClass" :commits 0 :bugfixes 0 :last-change 0}
+    (provided
+      (git/log ..git-repo.. "has/atend/TestClass.java") => []
+      (git/last-commit-date ..git-repo.. "has/atend/TestClass.java") => 0))
   (fact "should add data from log call"
-    (#'test-mate.analysis.test-need/add-commit-data ..git-repo.. {:class "TestClass"}) => {:class "TestClass" :commits 5 :bugfixes 2 :last-change ..last-commit-date..}
+    (#'test-mate.analysis.test-need/add-commit-data ..git-repo.. ..prefix.. {:class "TestClass"}) => {:class "TestClass" :commits 5 :bugfixes 2 :last-change ..last-commit-date..}
     (provided
-      (git/log ..git-repo.. "TestClass.java") => +dummy-log+
-      (git/last-commit-date ..git-repo.. "TestClass.java") => ..last-commit-date..)))
+      (git/log ..git-repo.. "..prefix../TestClass.java") => +dummy-log+
+      (git/last-commit-date ..git-repo.. "..prefix../TestClass.java") => ..last-commit-date..)))
 
 (facts "about join-bugfix-commit-data"
   (fact "should return empty if num is 0"
-    (#'test-mate.analysis.test-need/join-bugfix-commit-data ..git-repo.. 0
+    (#'test-mate.analysis.test-need/join-bugfix-commit-data ..git-repo.. 0 ..prefix..
       [..commit-data-1.. ..commit-data-2.. ..commit-data-3..]) => []
     (provided
-      (#'test-mate.analysis.test-need/add-commit-data ..git-repo.. anything) => ..added-commit-data.. :times 0))
+      (#'test-mate.analysis.test-need/add-commit-data ..git-repo.. ..prefix.. anything) => ..added-commit-data.. :times 0))
   (fact "should return first two logs if num is 2"
-    (#'test-mate.analysis.test-need/join-bugfix-commit-data ..git-repo.. 2
+    (#'test-mate.analysis.test-need/join-bugfix-commit-data ..git-repo.. 2 ..prefix..
       [..commit-data-1.. ..commit-data-2.. ..commit-data-3..]) => [..added-commit-data.. ..added-commit-data..]
     (provided
-      (#'test-mate.analysis.test-need/add-commit-data ..git-repo.. anything) => ..added-commit-data.. :times 3)))
+      (#'test-mate.analysis.test-need/add-commit-data ..git-repo.. ..prefix.. anything) => ..added-commit-data.. :times 3)))
 
 (facts "about result-as-csv"
   (fact "should be empty if no result"
@@ -67,10 +73,11 @@
     (#'test-mate.analysis.test-need/do-analyse {:coverage-file ..coverage-file..
                                                 :git-repo ..git-repo..
                                                 :output ..output-file..
-                                                :num-commits ..num-commits..}) => irrelevant
+                                                :num-commits ..num-commits..
+                                                :prefix ..prefix..}) => irrelevant
     (provided
       (#'test-mate.analysis.test-need/analyse-test-need-coverage ..coverage-file..) => ..coverage-data.. :times 1
-      (#'test-mate.analysis.test-need/join-bugfix-commit-data ..git-repo.. ..num-commits.. ..coverage-data..) => ..added-coverage-data.. :times 1
+      (#'test-mate.analysis.test-need/join-bugfix-commit-data ..git-repo.. ..num-commits.. ..prefix.. ..coverage-data..) => ..added-coverage-data.. :times 1
       (#'test-mate.analysis.test-need/result-as-csv anything ..added-coverage-data..) => [["class" "50" "4" "666" "987" "1458991995" "" "0.66" "0.01" "0.033" "1.89" "33.0"]] :times 1
       (spit ..output-file.. "class,commits,bugfixes,uncovered,lines,last-changed,'=>,coverage,bugfix/uncovered,bugfix/commit,bugfix/lines,days-last-update\nclass,50,4,666,987,1458991995,,0.66,0.01,0.033,1.89,33.0\n") => irrelevant :times 1)))
 
@@ -91,7 +98,16 @@
     (analyse-test-need (conj +minimal-ok-args+ "-n -1")) => irrelevant
     (provided
       (#'test-mate.analysis.test-need/exit-with-usage anything anything) => nil :times 1))
-  (fact "should start analysis if all args are given"
+  (fact "should use default prefix if none given"
     (analyse-test-need +minimal-ok-args+) => irrelevant
+    (provided
+      (#'test-mate.analysis.test-need/do-analyse
+        (checker [actual] (= (:prefix actual) "src/main/java/"))) => nil :times 1))
+  (fact "should start analysis if minimal set of args are given"
+    (analyse-test-need +minimal-ok-args+) => irrelevant
+    (provided
+      (#'test-mate.analysis.test-need/do-analyse anything) => nil :times 1))
+  (fact "should start analysis if all args are given"
+    (analyse-test-need (concat +minimal-ok-args+ +optional-args+)) => irrelevant
     (provided
       (#'test-mate.analysis.test-need/do-analyse anything) => nil :times 1)))

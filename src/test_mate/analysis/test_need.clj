@@ -2,7 +2,8 @@
   (:require [cover.aggregate.jacoco :as jacoco]
             [git                    :as git]
             [clojure.tools.cli      :as cli]
-            [clojure-csv.core       :as csv]))
+            [clojure-csv.core       :as csv]
+            [clojure.string         :as string]))
 
 (defn- coverage-per-line [[file {:keys [lines covered]}]]
   {:class file
@@ -19,8 +20,13 @@
 (defn bugfix-commit? [log-line]
   (.contains (.toLowerCase log-line) "fix"))
 
-(defn- add-commit-data [git-repo coverage-data]
-  (let [file (str (:class coverage-data) ".java")
+(defn- sanitise-prefix [prefix]
+  (if (string/ends-with? prefix "/")
+    prefix
+    (str prefix "/")))
+
+(defn- add-commit-data [git-repo prefix coverage-data]
+  (let [file (str (sanitise-prefix prefix) (:class coverage-data) ".java")
         log  (git/log git-repo file)
         last-change (git/last-commit-date git-repo file)]
     (assoc coverage-data
@@ -28,11 +34,11 @@
            :bugfixes (count (filter bugfix-commit? log))
            :last-change last-change)))
 
-(defn- join-bugfix-commit-data [git-repo n coverage-data]
+(defn- join-bugfix-commit-data [git-repo n prefix coverage-data]
   "Joins commit info to coverage data, takes only the first n coverage data since the commit data retrieval
   is very expensive"
   (->> coverage-data
-       (map (partial add-commit-data git-repo))
+       (map (partial add-commit-data git-repo prefix))
        (take n)))
 
 (def +csv-header+ [["class" "commits" "bugfixes" "uncovered" "lines" "last-changed" "'=>" "coverage" "bugfix/uncovered" "bugfix/commit" "bugfix/lines" "days-last-update"]])
@@ -61,7 +67,6 @@
                   (.toString (:bugfixes entry)) (.toString (:uncovered entry))
                   (.toString (:lines entry)) (.toString (:last-change entry))]
         derived-data (calculate-derived-data now entry)]
-    (println entry csv-data derived-data)
     (vec (concat csv-data derived-data))))
 
 (defn- result-as-csv [now result]
@@ -71,12 +76,13 @@
   (let [coverage-file (:coverage-file opts)
         git-repo (:git-repo opts)
         output-file (:output opts)
+        prefix (:prefix opts)
         now (/ (System/currentTimeMillis) 1000)]
     (spit output-file (csv/write-csv
                          (concat +csv-header+
                             (->> coverage-file
                                  analyse-test-need-coverage
-                                 (join-bugfix-commit-data git-repo (:num-commits opts))
+                                 (join-bugfix-commit-data git-repo (:num-commits opts) prefix)
                                  (result-as-csv now)))))))
 
 (def cli-options
@@ -90,7 +96,10 @@
    ["-n" "--num-commits NUM" "number of commits to consider (this affects runtime)"
     :default 1000
     :parse-fn #(Integer/parseInt %)
-    :validate [#(>= % 0) "Must be a number > 0"]]])
+    :validate [#(>= % 0) "Must be a number > 0"]]
+   ["-p" "--prefix PREFIX" "prefix used to put before class names in the emma report to get a valid file in the git repo"
+    :default "src/main/java/"]])
+
 
 (defn- exit []
   (System/exit -1))
