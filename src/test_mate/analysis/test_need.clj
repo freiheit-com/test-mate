@@ -48,19 +48,20 @@
     now
     (:last-change entry)))
 
-(defn- calculate-derived-data [now entry]
+(defn- calculate-derived-data [now {:keys [lines uncovered bugfixes commits] :as entry}]
   ["" ; => field (as separator in csv file)
-   (.toString (round-to-precision 4 (/ (- (:lines entry) (:uncovered entry)) (:lines entry)))) ;coverage
-   (.toString (round-to-precision 4 (/ (:bugfixes entry) (:uncovered entry))))
-   (.toString (round-to-precision 4 (/ (:bugfixes entry) (:commits entry))))
-   (.toString (round-to-precision 4 (/ (:bugfixes entry) (:lines entry))))
+   (if (zero? lines) "-" (.toString (round-to-precision 4 (/ (- lines uncovered) lines)))) ;coverage
+   (if (zero? uncovered) "-" (.toString (round-to-precision 4 (/ bugfixes uncovered))))
+   (if (zero? commits) "-" (.toString (round-to-precision 4 (/ bugfixes commits))))
+   (if (zero? lines) "-" (.toString (round-to-precision 4 (/ bugfixes lines))))
    (.toString (round-to-precision 0 (/ (- now (last-changed now entry)) (* 60 60 24))))])
 
 (defn- csv-fields [now entry]
-  (let [csv-data [(:class entry) (.toString (:commits entry))
+  (let [csv-data [(or (:class entry) "unknown") (.toString (:commits entry))
                   (.toString (:bugfixes entry)) (.toString (:uncovered entry))
                   (.toString (:lines entry)) (.toString (:last-change entry))]
         derived-data (calculate-derived-data now entry)]
+    (println entry csv-data derived-data)
     (vec (concat csv-data derived-data))))
 
 (defn- result-as-csv [now result]
