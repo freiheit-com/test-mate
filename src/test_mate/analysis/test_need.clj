@@ -29,10 +29,12 @@
   (let [file (str (sanitise-prefix prefix) (:class coverage-data) ".java")
         log  (git/log git-repo file)
         last-change (git/last-commit-date git-repo file)]
-    (assoc coverage-data
-           :commits (count log)
-           :bugfixes (count (filter bugfix-commit? log))
-           :last-change last-change)))
+    (if (or (= :fail last-change) (= :fail log))
+      (do (println (str "failed to find " file " file in git")) (assoc coverage-data :commits 0 :bugfixes 0 :last-change 0))
+      (assoc coverage-data
+             :commits (count log)
+             :bugfixes (count (filter bugfix-commit? log))
+             :last-change last-change))))
 
 (defn- join-bugfix-commit-data [git-repo n prefix coverage-data]
   "Joins commit info to coverage data, takes only the first n coverage data since the commit data retrieval
@@ -99,7 +101,6 @@
     :validate [#(>= % 0) "Must be a number > 0"]]
    ["-p" "--prefix PREFIX" "prefix used to put before class names in the emma report to get a valid file in the git repo"
     :default "src/main/java/"]])
-
 
 (defn- exit []
   (System/exit -1))

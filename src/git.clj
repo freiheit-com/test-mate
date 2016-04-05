@@ -10,13 +10,15 @@
    :dir git-repo])
 
 (defn last-commit-date [git-repo file]
-  (let [out (string/trim (:out (sh "git" "log" "-1" "--format=%ct" file :dir git-repo)))]
-    (if (= out "")
-      0
-      (Integer/parseInt out))))
+  (let [sh-result (sh "git" "log" "-1" "--format=%ct" file :dir git-repo)
+        out (string/trim (:out sh-result))]
+    (if (= 0 (:exit sh-result))
+      (if (= out "") 0 (Integer/parseInt out))
+      :fail)))
 
 (defn log [git-repo file]
-  (let [cmd (git-log-cmd git-repo file)]
-    (->> (apply sh cmd)
-         :out
-         string/split-lines)))
+  (let [cmd (git-log-cmd git-repo file)
+        sh-result (apply sh cmd)]
+    (if (= 0 (:exit sh-result))
+      (string/split-lines (:out sh-result))
+      :fail)))

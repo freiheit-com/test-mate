@@ -39,10 +39,21 @@
       (git/log ..git-repo.. "has/atend/TestClass.java") => []
       (git/last-commit-date ..git-repo.. "has/atend/TestClass.java") => 0))
   (fact "should add data from log call"
-    (#'test-mate.analysis.test-need/add-commit-data ..git-repo.. ..prefix.. {:class "TestClass"}) => {:class "TestClass" :commits 5 :bugfixes 2 :last-change ..last-commit-date..}
+    (#'test-mate.analysis.test-need/add-commit-data ..git-repo.. ..prefix.. {:class "TestClass"}) => {:class "TestClass" :commits 5 :bugfixes 2 :last-change 1234}
     (provided
       (git/log ..git-repo.. "..prefix../TestClass.java") => +dummy-log+
-      (git/last-commit-date ..git-repo.. "..prefix../TestClass.java") => ..last-commit-date..)))
+      (git/last-commit-date ..git-repo.. "..prefix../TestClass.java") => 1234))
+  (fact "should add zeros if git-log fails"
+    (#'test-mate.analysis.test-need/add-commit-data ..git-repo.. ..prefix.. {:class "TestClass"}) => {:class "TestClass" :commits 0 :bugfixes 0 :last-change 0}
+    (provided
+      (git/log ..git-repo.. anything) => :fail
+      (git/last-commit-date ..git-repo.. anything) => 1234))
+  (fact "should not add something if git-last-commit fails"
+    (#'test-mate.analysis.test-need/add-commit-data ..git-repo.. ..prefix.. {:class "TestClass"}) => {:class "TestClass" :commits 0 :bugfixes 0 :last-change 0}
+    (provided
+      (git/log ..git-repo.. anything) => +dummy-log+
+      (git/last-commit-date ..git-repo.. anything) => :fail)))
+
 
 (facts "about join-bugfix-commit-data"
   (fact "should return empty if num is 0"
