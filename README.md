@@ -7,8 +7,10 @@ Usage:
 either
 
 `lein run <parameters>` from the git repository with leiningen installed
+
 or
-`test-mate <parameter>` where test-mate is an alias for `java -jar <path-to-test-mate-jar>` that
+
+`test-mate <parameters>` where test-mate is an alias for `java -jar <path-to-test-mate-jar>` that
 is used throughout this documentation.
 
 # Configuration
