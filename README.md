@@ -86,7 +86,7 @@ test-mate automatically infers the coverage format from `coverage_file`. Current
 
 ## test-need
 
-The test-need analysis helps to find classes in Java based projects that probably need
+The test-need analysis helps to find classes in Java-based projects that probably need
 tests added the most (hence the name test-need).
 
 It outputs a csv file with some metrics for each java file in the repository.
@@ -104,29 +104,29 @@ executing `test-mate analysis test-need` will print the options for the analysis
     -n, --num-commits NUM     1000                 number of commits to consider (this affects runtime)
     -p, --prefix PREFIX       src/main/java/       prefix used to put before class names in the emma report to get a valid file in the git repo
 
-Only the options `--coverage-file` and `--git-repo` are mandatory. With `--output` you can give a
-different output file location, if the default one is not what you want.
+Only the options `--coverage-file` and `--git-repo` are mandatory. With `--output` you can select a
+different output file location if the default file location is not your first choice.
 
-The `--num-commits` options controls the considered set of files for which the repository is scanned. Supplying a high number
-affects runtime of the analysis run since the git operations are not that fast.
+The `--num-commits` options controls the considered set of files, for which the repository is scanned. Supplying a high number
+affects runtime of the analysis run, since the git operations are not fast enough.
 
 The first ranking is done by absolute uncovered lines for each file. This information is extracted from the
 supplied coverage-file. The first `--num-commits` files in this ranked list are considered for further analysis. (The idea
-behind this filter is that files with good coverage probably don't need tests that badly. This assumption can of course
-be totally wrong).
+behind this filter: files with good coverage probably do not need tests badly. This assumption can, of course,
+be completely wrong).
 
-For matching files from the coverage-file to files in the git-repository the `--prefix` option can be used. This prefix
-is prepended to the file name in the coverage-file and should give the file location of the java source file in
-the git-repository. The analysis prints warnings if cannot find the file in the git-repository and ignores the file.
+In order to match files from the coverage-file to files in the git-repository the `--prefix` option can be used. This prefix
+is prepended to the file name in the coverage-file and should provide the file location of the java source file in
+the git-repository. The analysis prints warnings if it cannot find the file in the git-repository and ultimately ignores the file.
 
-After analysis execution is outputs a csv file with this information:
+After analysis execution outputs a csv file with this information:
 
     class,commits,bugfixes,uncovered,lines,last-changed,'=>,coverage,bugfix/uncovered,bugfix/commit,bugfix/lines,days-last-update
 
 with:
 * class: the java source file
 * commits: the number of commits for this source file
-* bugfixes: the number of bugfixes for the source file. A commit is considered a bugfix is the commit message contains
+* bugfixes: the number of bugfixes for the source file. A commit is considered a bugfix if the commit message contains
   the string `fix` (case-insensitive) in it
 * uncovered: absolute number of uncovered lines
 * last-changed: unix-timestamp of last commit for this file
@@ -136,7 +136,7 @@ separated by a `=>` follow the derived data, which are:
 * bugfix/uncovered: number of bugfixes per uncovered line
 * bugfix/commit: ratio of bugfixes on total commits of this file
 * bugfix/lines: ratio of bugfixes on total lines of this file
-* days-last-update: 'freshness' of the file. A file that was not touched in a long time, probably does not new tests added to it.
+* days-last-update: 'freshness' of the file. A file that was not accessed in a long time, probably does not need new tests added to it.
 
 Finding an interesting case for a class that needs tests added to it is now a manual task.
 The idea is to open the csv file with an editor that supports sorting by different columns
