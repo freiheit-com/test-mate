@@ -73,8 +73,7 @@ a file with all projects in the statistic server and only append new projects).
 
     test-mate aggregate <path/to/coverage_file> package-regex-1 package-regex-2 ...
 
-This command aggregates coverage data for each `package-regex` (Java regex syntax) and prints the result in EDN-format to the
-console.
+This command aggregates coverage data for each `package-regex` (Java regex syntax) and prints the result in EDN-format (https://github.com/edn-format/edn) to the console.
 
 Note: You can supply the special package `/` (or use the regex `.*`) to aggregate the overall coverage result. Sub-package aggregation is not supported by all coverage formats.
 
@@ -95,9 +94,9 @@ To run the analysis you will need:
 - a git repository
 - an Emma/Jacoco coverage xml report file
 
-executing `test-mate analysis test-need` will print the options for the analysis, currently:
+executing `test-mate analyse test-need` will print the options for the analysis, currently:
 
-    test-need analysis options:
+    test-need analyse options:
     -c, --coverage-file FILE                       coverage file (emma/jacoco format)
     -r, --git-repo REPO                            git repository
     -o, --output FILE         ./test_need_out.csv  output file (csv format)
