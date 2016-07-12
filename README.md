@@ -81,7 +81,7 @@ test-mate automatically infers the coverage format from `coverage_file`. Current
 - Emma/Jacoco (also supports the old coverage format, as written bei cloverage)
 - Cobertura (does not yet support the subpackage aggregation)
 
-# Analyse
+# Analysis
 
 ## test-need
 
@@ -94,9 +94,9 @@ To run the analysis you will need:
 - a git repository
 - an Emma/Jacoco coverage xml report file
 
-executing `test-mate analyse test-need` will print the options for the analysis, currently:
+executing `test-mate analysis test-need` will print the options for the analysis, currently:
 
-    test-need analyse options:
+    test-need analysis options:
     -c, --coverage-file FILE                       coverage file (emma/jacoco format)
     -r, --git-repo REPO                            git repository
     -o, --output FILE         ./test_need_out.csv  output file (csv format)

@@ -6,10 +6,10 @@
 
 (facts "analysis-core"
   (fact "should do nothing on unknown analysis"
-    (analyse ["unknown-analysis"]) => irrelevant
+    (analysis ["unknown-analysis"]) => irrelevant
     (provided
       (command/exit-with-usage "unknown analysis: unknown-analysis") => nil :times 1))
   (fact "should call test-need"
-    (analyse ["test-need" ..arg1.. ..arg2..]) => irrelevant
+    (analysis ["test-need" ..arg1.. ..arg2..]) => irrelevant
     (provided
-      (test-need/analyse-test-need [..arg1.. ..arg2..]) => nil :times 1)))
+      (test-need/analysis-test-need [..arg1.. ..arg2..]) => nil :times 1)))

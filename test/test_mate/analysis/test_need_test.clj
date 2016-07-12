@@ -6,9 +6,9 @@
 (def +minimal-ok-args+ ["-c" "coverage-file/path.xml" "-r" "path/to/repo"])
 (def +optional-args+ ["-n" "100" "-o" "output/file.csv" "-p" "src/java"])
 
-(facts "about analyse-test-need-coverage"
+(facts "about analysis-test-need-coverage"
   (fact "should sort by most uncovered lines"
-    (analyse-test-need-coverage "test/cover/testfiles/jacoco/class_coverage.xml") =>
+    (analysis-test-need-coverage "test/cover/testfiles/jacoco/class_coverage.xml") =>
       '({:class "com/freiheit/foo/Bar" :uncovered 90 :lines 100}
         {:class "com/freiheit/MyClass1" :uncovered 10 :lines 10}
         {:class "com/Bar2" :uncovered 0 :lines 200})))
@@ -79,46 +79,46 @@
                   ["class2" "1" "0" "89" "113" "0" "" "0.2124" "0.0" "0.0" "0.0" "0.0"]
                   ["class3" "103" "26" "230" "233" "1255691895" "" "0.0129" "0.113" "0.2524" "0.1116" "2351.0"]]))
 
-(facts "about do-analyse"
+(facts "about do-analysis"
   (fact "should spit analysis output to file"
-    (#'test-mate.analysis.test-need/do-analyse {:coverage-file ..coverage-file..
+    (#'test-mate.analysis.test-need/do-analysis {:coverage-file ..coverage-file..
                                                 :git-repo ..git-repo..
                                                 :output ..output-file..
                                                 :num-commits ..num-commits..
                                                 :prefix ..prefix..}) => irrelevant
     (provided
-      (#'test-mate.analysis.test-need/analyse-test-need-coverage ..coverage-file..) => ..coverage-data.. :times 1
+      (#'test-mate.analysis.test-need/analysis-test-need-coverage ..coverage-file..) => ..coverage-data.. :times 1
       (#'test-mate.analysis.test-need/join-bugfix-commit-data ..git-repo.. ..num-commits.. ..prefix.. ..coverage-data..) => ..added-coverage-data.. :times 1
       (#'test-mate.analysis.test-need/result-as-csv anything ..added-coverage-data..) => [["class" "50" "4" "666" "987" "1458991995" "" "0.66" "0.01" "0.033" "1.89" "33.0"]] :times 1
       (spit ..output-file.. "class,commits,bugfixes,uncovered,lines,last-changed,'=>,coverage,bugfix/uncovered,bugfix/commit,bugfix/lines,days-last-update\nclass,50,4,666,987,1458991995,,0.66,0.01,0.033,1.89,33.0\n") => irrelevant :times 1)))
 
 (facts "about analysis main function"
   (fact "should print usage if no repo given"
-    (analyse-test-need ["-c coverage-file.xml"]) => irrelevant
+    (analysis-test-need ["-c coverage-file.xml"]) => irrelevant
     (provided
       (#'test-mate.analysis.test-need/exit-with-usage anything anything) => nil :times 1))
   (fact "should print usage if no coverage file given"
-    (analyse-test-need ["-r repo-path"]) => irrelevant
+    (analysis-test-need ["-r repo-path"]) => irrelevant
     (provided
       (#'test-mate.analysis.test-need/exit-with-usage anything anything) => nil :times 1))
   (fact "should print usage if unknown argument is given"
-    (analyse-test-need (conj +minimal-ok-args+ "--unkown-argument")) => irrelevant
+    (analysis-test-need (conj +minimal-ok-args+ "--unkown-argument")) => irrelevant
     (provided
       (#'test-mate.analysis.test-need/exit-with-usage anything anything) => nil :times 1))
   (fact "should print usage if num-commits < 0"
-    (analyse-test-need (conj +minimal-ok-args+ "-n -1")) => irrelevant
+    (analysis-test-need (conj +minimal-ok-args+ "-n -1")) => irrelevant
     (provided
       (#'test-mate.analysis.test-need/exit-with-usage anything anything) => nil :times 1))
   (fact "should use default prefix if none given"
-    (analyse-test-need +minimal-ok-args+) => irrelevant
+    (analysis-test-need +minimal-ok-args+) => irrelevant
     (provided
-      (#'test-mate.analysis.test-need/do-analyse
+      (#'test-mate.analysis.test-need/do-analysis
         (checker [actual] (= (:prefix actual) "src/main/java/"))) => nil :times 1))
   (fact "should start analysis if minimal set of args are given"
-    (analyse-test-need +minimal-ok-args+) => irrelevant
+    (analysis-test-need +minimal-ok-args+) => irrelevant
     (provided
-      (#'test-mate.analysis.test-need/do-analyse anything) => nil :times 1))
+      (#'test-mate.analysis.test-need/do-analysis anything) => nil :times 1))
   (fact "should start analysis if all args are given"
-    (analyse-test-need (concat +minimal-ok-args+ +optional-args+)) => irrelevant
+    (analysis-test-need (concat +minimal-ok-args+ +optional-args+)) => irrelevant
     (provided
-      (#'test-mate.analysis.test-need/do-analyse anything) => nil :times 1)))
+      (#'test-mate.analysis.test-need/do-analysis anything) => nil :times 1)))
