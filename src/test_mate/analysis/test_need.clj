@@ -10,7 +10,7 @@
    :uncovered (- lines covered)
    :lines lines})
 
-(defn analyse-test-need-coverage [coverage-file]
+(defn analysis-test-need-coverage [coverage-file]
   (->> coverage-file
        jacoco/aggregate-class-coverage
        (map coverage-per-line)
@@ -74,7 +74,7 @@
 (defn- result-as-csv [now result]
   (vec (map (partial csv-fields now) result)))
 
-(defn- do-analyse [opts]
+(defn- do-analysis [opts]
   (let [coverage-file (:coverage-file opts)
         git-repo (:git-repo opts)
         output-file (:output opts)
@@ -83,7 +83,7 @@
     (spit output-file (csv/write-csv
                          (concat +csv-header+
                             (->> coverage-file
-                                 analyse-test-need-coverage
+                                 analysis-test-need-coverage
                                  (join-bugfix-commit-data git-repo (:num-commits opts) prefix)
                                  (result-as-csv now)))))))
 
@@ -112,8 +112,8 @@
   (println msg)
   (exit))
 
-(defn analyse-test-need [args]
+(defn analysis-test-need [args]
   (let [{:keys [options arguments errors summary]} (cli/parse-opts args cli-options)]
     (cond
       (or (not (empty? arguments)) errors) (exit-with-usage summary errors)
-      :else (do-analyse options))))
+      :else (do-analysis options))))

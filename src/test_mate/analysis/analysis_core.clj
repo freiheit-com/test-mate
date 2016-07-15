@@ -2,7 +2,7 @@
   (:require [test-mate.analysis.test-need :as test-need]
             [test-mate.cmd :as command]))
 
-(defn analyse [[cmd & args]]
+(defn analysis [[cmd & args]]
   "Multiplex function for analysis commands"
-  (cond (= cmd "test-need") (test-need/analyse-test-need args)
-        :else (command/exit-with-usage (str "unknown analysis: " cmd))))
+  (cond (= cmd "test-need") (test-need/analysis-test-need args)
+        :else (command/exit-with-usage (str "unknown analysis: " cmd) "analysis")))
