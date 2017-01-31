@@ -82,10 +82,10 @@
 (facts "about do-analysis"
   (fact "should spit analysis output to file"
     (#'test-mate.analysis.test-need/do-analysis {:coverage-file ..coverage-file..
-                                                :git-repo ..git-repo..
-                                                :output ..output-file..
-                                                :num-commits ..num-commits..
-                                                :prefix ..prefix..}) => irrelevant
+                                                 :git-repo ..git-repo..
+                                                 :output ..output-file..
+                                                 :num-commits ..num-commits..
+                                                 :prefix ..prefix..}) => irrelevant
     (provided
       (#'test-mate.analysis.test-need/analysis-test-need-coverage ..coverage-file..) => ..coverage-data.. :times 1
       (#'test-mate.analysis.test-need/join-bugfix-commit-data ..git-repo.. ..num-commits.. ..prefix.. ..coverage-data..) => ..added-coverage-data.. :times 1

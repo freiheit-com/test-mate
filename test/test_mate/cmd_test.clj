@@ -4,4 +4,4 @@
 
 (facts "exit"
   (fact "nothing happens if exit called"
-    (exit-with-usage "message") => irrelevant)) ;ok if no exception thrown
+    (exit-with-usage "message" "command") => irrelevant)) ;ok if no exception thrown

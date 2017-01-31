@@ -8,7 +8,7 @@
   (fact "should do nothing on unknown analysis"
     (analysis ["unknown-analysis"]) => irrelevant
     (provided
-      (command/exit-with-usage "unknown analysis: unknown-analysis") => nil :times 1))
+      (command/exit-with-usage "unknown analysis: unknown-analysis" "analysis") => nil :times 1))
   (fact "should call test-need"
     (analysis ["test-need" ..arg1.. ..arg2..]) => irrelevant
     (provided

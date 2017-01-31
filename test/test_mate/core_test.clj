@@ -10,7 +10,7 @@
   (fact "should do nothing on unknown main command"
     (-main "unknown-command") => irrelevant
     (provided
-      (cmd/exit-with-usage "unknown-command") => nil :times 1))
+      (cmd/exit-with-usage "Unknown command: unknown-command" "unknown-command") => nil :times 1))
 
   (fact "should call aggregate on aggregate command"
     (-main "aggregate" ..coverage-file.. ..p1.. ..p2..) => irrelevant

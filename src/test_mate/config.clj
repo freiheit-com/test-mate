@@ -19,7 +19,7 @@
       (read-config-file (new java.io.File sys-prop-file))
       (read-config-from-home-dir home-file-name))))
 
-(def ^:private ^:dynamic *test-mate-config* (read-config +home-config-file+))
+(def ^:dynamic *test-mate-config* (read-config +home-config-file+))
 
 (def statistic-server-url (partial *test-mate-config* :statistic-server-url))
 
@@ -29,4 +29,12 @@
 (defn meta-auth-token []
   (-> *test-mate-config* :auth-tokens :meta))
 
+(defn statistics-auth-token []
+  (-> *test-mate-config* :auth-tokens :statistics))
+
 (def default-project (partial *test-mate-config* :default-project))
+
+(defn allow-decreasing-coverage []
+  (let [option (:allow-decreasing-coverage *test-mate-config*)]
+    (if (nil? option)
+      true (boolean option))))

@@ -2,6 +2,7 @@
   (:require [midje.sweet      :refer :all]
             [test-mate.cmd :as command]
             [test-mate.config :as config]
+            [test-mate.exit :as exit]
             [cover.parse :as parse]
             [clj-http.client :as client]
             [cheshire.core :as cheshire]
@@ -11,7 +12,7 @@
   (fact "should do nothing on unknown command"
     (push-data ["unknown-command"]) => irrelevant
     (provided
-      (command/exit-with-usage "unknown statistic-server command: unknown-command") => nil :times 1))
+      (command/exit-with-usage "unknown statistic-server command: unknown-command" "statistic-server") => nil :times 1))
 
   (fact "should publish data on command"
     (push-data ["publish-coverage" "file" "overrides"]) => irrelevant
@@ -45,12 +46,17 @@
 (defchecker body-with [expected]
   (checker [actual] (= expected (cheshire/parse-string (:body actual) true))))
 
-;{"lines": <n>, "covered": <m>, "project": "<project-name>", "subproject": "<subproject-name>", "language": "<language>"}
+(fact "pushed-coverage"
+  (fact "calcs percentage"
+    (percentage-of-pushed {:covered 666 :lines 1000}) => 0.666)
+  (fact "calcs correctly with zero"
+    (percentage-of-pushed {:covered 0 :lines 0}) => 1.0))
 
 (facts "publish-statistic-data"
   (fact "should publish parsed stats with default config if no project supplied"
     (publish-statistic-data ..coverage-file.. nil) => irrelevant
     (provided
+      (config/allow-decreasing-coverage) => true
       (config/default-project) => {:project "test" :subproject "test-sub" :language "clojure"}
       (parse/stats ..coverage-file..) => {:lines 1000 :covered 333}
       (client/put anything (body-with {:lines 1000 :covered 333 :project "test" :subproject "test-sub" :language "clojure"})) => irrelevant))
@@ -58,6 +64,27 @@
   (fact "should publish parsed stats with merged project data"
     (publish-statistic-data ..coverage-file.. "{:subproject \"overriden-sub\" :language \"overriden-lang\" :ignored \"value\"}") => irrelevant
     (provided
+      (config/allow-decreasing-coverage) => true
       (config/default-project) => {:project "test" :subproject "test-sub" :language "clojure"}
       (parse/stats ..coverage-file..) => {:lines 1000 :covered 333}
-      (client/put anything (body-with {:lines 1000 :covered 333 :project "test" :subproject "overriden-sub" :language "overriden-lang"})) => irrelevant)))
+      (client/put anything (body-with {:lines 1000 :covered 333 :project "test" :subproject "overriden-sub" :language "overriden-lang"})) => irrelevant))
+
+  (fact "does not publish data and terminate with non-zero value if decreasing coverage not allowed"
+    (binding [config/*test-mate-config* {:allow-decreasing-coverage false}]
+      (publish-statistic-data ..coverage-file.. nil) => irrelevant
+      (provided
+        (config/allow-decreasing-coverage) => false
+        (config/default-project) => {:project "test" :subproject "test-sub" :language "clojure"}
+        (parse/stats ..coverage-file..) => {:lines 1000 :covered 300}
+        (client/get anything anything) => {:body "{\"overall-coverage\": {\"lines\": 1000, \"covered\": 334, \"percentage\": 0.334}}"}
+        (exit/terminate -1) => anything)))
+
+  (fact "does publish data if new coverage is below threshold but within epsilon allowance"
+    (binding [config/*test-mate-config* {:allow-decreasing-coverage false}]
+      (publish-statistic-data ..coverage-file.. nil) => irrelevant
+      (provided
+        (config/allow-decreasing-coverage) => false
+        (config/default-project) => {:project "test" :subproject "test-sub" :language "clojure"}
+        (parse/stats ..coverage-file..) => {:lines 10000 :covered 3333}
+        (client/get anything anything) => {:body "{\"overall-coverage\": {\"lines\": 10000, \"covered\": 3340, \"percentage\": 0.0334}}"}
+        (client/put anything (body-with {:lines 10000 :covered 3333 :project "test" :subproject "test-sub" :language "clojure"})) => irrelevant))))

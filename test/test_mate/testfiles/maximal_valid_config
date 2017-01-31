@@ -1,0 +1,4 @@
+{
+ :statistic-server-url "https://server-via-property-set"
+ :allow-decreasing-coverage false
+}

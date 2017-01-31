@@ -11,4 +11,4 @@
     (cond (= command "aggregate") (println "aggregate: " (cover/aggregate (first args) (rest args)))
           (= command "analysis") (analysis/analysis args)
           (= command "statistic-server") (statistic-server/push-data args)
-          :else (cmd/exit-with-usage (str "Unknown command:" command) command))))
+          :else (cmd/exit-with-usage (str "Unknown command: " command) command))))
