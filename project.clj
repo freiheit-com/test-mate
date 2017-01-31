@@ -9,7 +9,8 @@
                  [org.clojure/data.zip "0.1.1"]
                  [org.clojure/tools.cli "0.3.3"]
                  [clojure-csv/clojure-csv "2.0.2"]]
-  :profiles {:dev {:dependencies [[midje "1.8.3"]]}}
+  :profiles {:dev {:dependencies [[midje "1.8.3"]]
+                   :plugins [[lein-midje "3.2.1"]]}}
   :aot :all
   :main test-mate.core
   :jvm-opts ["-Xss8m"]) ;workaround: big jacoco files need a lot of stack -> rewrite aggregation with tail recursion
