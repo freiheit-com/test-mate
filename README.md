@@ -36,7 +36,7 @@ This config file is only needed if you want do interface with statistic server.
 
 # Interfacing with statistic server
 
-## pushing coverage database
+## pushing coverage data
 
     test-mate statistic-server publish-coverage <path/to/jacoco_coverage.xml>
 
