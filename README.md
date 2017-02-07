@@ -27,7 +27,11 @@ You can provide the following data in the config file:
        :subproject "test-sub"
        :language "java"
      }
+     :allow-decreasing-coverage false
     }
+
+The option `:allow-decreasing-coverage` defaults to true if not configured. If set to false the push will fail with
+a non-zero exit value if the new coverage values is below the current coverage value (compared in percentage with an epsilon of 0.001).
 
 Optionally, you can set the Java system property `fdc.test-mate.config.file` with a file-path to the config file.
 Setting the system property overrides the configuration in the home directory.
