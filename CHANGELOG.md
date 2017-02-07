@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.8.0] - 2017-02-07
+### Added
+- :allow-decreasing-coverage feature (option to fail push if coverage decreases)
+
 ## [0.7.0] - 2016-04-05
 ### Added
 - command line argument for prefix in test-need analysis
