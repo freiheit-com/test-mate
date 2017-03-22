@@ -3,15 +3,19 @@
             [cover.parse :refer :all]
             [clojure.string :refer [split-lines]]
             [cover.aggregate.cobertura :as cobertura]
-            [cover.aggregate.jacoco :as jacoco]))
+            [cover.aggregate.jacoco :as jacoco]
+            [cover.aggregate.go :as go]
+            [test-mate.cmd :as command]))
 
 ;; setup
 
 (def _jacoco-dir "test/cover/testfiles/jacoco/")
 (def _cobertura-dir "test/cover/testfiles/cobertura/")
+(def _go-dir "test/cover/testfiles/go/")
 
 (def _minimal-jacoco (str _jacoco-dir "minimal.xml"))
 (def _minimal-cobertura (str _cobertura-dir "minimal.xml"))
+(def _go-testfile (str _go-dir "test.out"))
 
 ;; doctype?
 
@@ -49,6 +53,7 @@
 
 (def _cobertura-doctype (second _cobertura-header))
 (def _jacoco-doctype (second _jacoco-header))
+(def _go ())
 
 (deftest should-test-cobertura-doctype
   (is (true? (cobertura? _cobertura-doctype))))
@@ -78,6 +83,8 @@
 (deftest should-discover-cobertura-filetype
   (is (= :cobertura (discover-type _minimal-cobertura))))
 
+(deftest should-discover-go-filetype
+  (is (= :go (discover-type _go-testfile))))
 
 ;; stats
 
@@ -89,6 +96,9 @@
   (with-redefs-fn {#'jacoco/stats (fn [& _] :called)}
     #(is (= :called (stats _minimal-jacoco)))))
 
+(deftest should-call-aggregate-on-go
+  (with-redefs-fn {#'go/stats (fn [& _] :called)}
+    #(is (= :called (stats _go-testfile)))))
 
 ;; aggregate
 
@@ -101,3 +111,11 @@
 (deftest should-call-aggregate-root-on-jacoco
   (with-redefs-fn {#'jacoco/aggregate (fn [p & _] (is (_root? p)) :called)}
     #(is (= :called (aggregate _minimal-jacoco ["/"])))))
+
+(deftest should-error-on-aggregate-go-package ;real functionality not yet implemented
+  (with-redefs-fn {#'command/exit-with-usage (fn [_ _] :called)}
+    #(is (= :called (aggregate _go-testfile ["/some/"])))))
+
+(deftest should-delegate-to-stats-if-root-is-used ;real functionality not yet implemented
+  (with-redefs-fn {#'go/stats (fn [_] :called)}
+    #(is (= :called (aggregate _go-testfile ["/"])))))

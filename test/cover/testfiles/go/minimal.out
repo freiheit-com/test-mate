@@ -1,0 +1,4 @@
+mode: set
+path/to/a.go:23.70,25.2 1 0
+path/to/a.go:28.91,30.16 2 1
+path/to/a.go:33.2,35.16 3 0

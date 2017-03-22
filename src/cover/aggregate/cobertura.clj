@@ -72,8 +72,9 @@
       z/up
       get-name-attr))
 
+;TODO rename to overall-coverage
 (defn stats
-  "Returns basic statistics from REPORT."
+  "Returns basic statistics from REPORT. Produces a overall coverage information."
   [report]
   (let [xml (reader/read-report report)]
     (or (tryCatch (parse-root xml))

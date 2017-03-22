@@ -1,5 +1,6 @@
 (ns cover.aggregate.jacoco
-  (:require [cover.reader.xml-non-validate :as reader]))
+  (:require [cover.reader.xml-non-validate :as reader]
+            [cover.aggregate.common :as common]))
 
 (def neutral-count [0 0])
 (def special-root-package "/")
@@ -52,15 +53,10 @@
           (= tag :coverage) (line-counter-legacy-format decl)
           :else (sum-counts (map aggregate-line-coverage content)))))
 
-(defn- percentage [lines covered]
-  (if (= lines 0)
-    1
-    (double (/ covered lines))))
-
 (defn- readable [[covered lines]]
   {:covered covered
    :lines lines
-   :percentage (percentage lines covered)})
+   :percentage (common/percentage lines covered)})
 
 (defn- do-aggregate [report-packages aggregation package-pattern]
   (let [filtered (filter (partial package-matches package-pattern) report-packages)]
@@ -107,7 +103,8 @@
   (let [report-packages (packages-of-report (reader/read-report file))]
     (reduce do-aggregate-classes {} report-packages)))
 
+;rename to overall-coverage
 (defn stats
-  "Returns statistics from FILE"
+  "Returns summary statistics from FILE. Produces a overall coverage information."
   [file]
   (get (aggregate ["/"] file) "/"))

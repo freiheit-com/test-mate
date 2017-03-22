@@ -1,8 +1,10 @@
 (ns cover.parse
   (:require [cover.aggregate.jacoco :as jacoco]
             [cover.aggregate.cobertura :as cobertura]
+            [cover.aggregate.go :as go]
             [clojure.java.io :refer [reader]]
-            [clojure.string :refer [lower-case]]))
+            [clojure.string :refer [lower-case]]
+            [test-mate.cmd :as command]))
 
 (def cobertura-doctype "cobertura")
 (def jacoco-doctype "jacoco")
@@ -22,7 +24,6 @@
   [s doctype]
   (when s (.contains (lower-case s) doctype)))
 
-
 (defn cobertura?
   "true if cobertura doctype"
   [s]
@@ -33,11 +34,19 @@
   [s]
   (check-docktype-string s jacoco-doctype))
 
+(defn go?
+  "true if this a go coverage file"
+  [s]
+  (.startsWith s "mode:"))
+
+
 (defn discover-type-from-lines
   "Deducts type of data from LINES."
   [lines]
-  (let [docstring (find-doctype lines)]
+  (let [first-line (first lines)
+        docstring (find-doctype lines)]
     (cond
+      (go? first-line) :go
       (cobertura? docstring) :cobertura
       (jacoco? docstring) :jacoco
       :else :jacoco)))
@@ -48,19 +57,22 @@
   (with-open [rdr (reader file)]
     (discover-type-from-lines (line-seq rdr))))
 
+(defn stats
+  "Parses COVERAGE-FILE and returns an object of packages containing coverage statistics"
+  [coverage-file]
+  (let [type (discover-type coverage-file)]
+    (cond
+      (= type :jacoco) (jacoco/stats coverage-file)
+      (= type :cobertura) (cobertura/stats coverage-file)
+      (= type :go) (go/stats coverage-file))))
 
 (defn aggregate
    "Parses COVERAGE-FILE and returns an object of packages containing coverage data"
   [coverage-file packages]
   (let [type (discover-type coverage-file)]
-    (if (= :jacoco type)
-      (jacoco/aggregate packages coverage-file)
-      (cobertura/aggregate packages coverage-file))))
-
-(defn stats
-   "Parses COVERAGE-FILE and returns an object of packages containing coverage statistics"
-  [coverage-file]
-  (let [type (discover-type coverage-file)]
-    (if (= :jacoco type)
-      (jacoco/stats coverage-file)
-      (cobertura/stats coverage-file))))
+    (cond
+      (= type :jacoco) (jacoco/aggregate packages coverage-file)
+      (= type :cobertura) (cobertura/aggregate packages coverage-file)
+      (= type :go) (if (= packages ["/"])
+                     (go/stats coverage-file)
+                     (command/exit-with-usage "aggregate for go files does not support package other than /" "aggregate")))))

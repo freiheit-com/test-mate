@@ -82,8 +82,9 @@ This command aggregates coverage data for each `package-regex` (Java regex synta
 Note: You can supply the special package `/` (or use the regex `.*`) to aggregate the overall coverage result. Sub-package aggregation is not supported by all coverage formats.
 
 test-mate automatically infers the coverage format from `coverage_file`. Currently the following formats are supported:
-- Emma/Jacoco (also supports the old coverage format, as written bei cloverage)
+- Emma/Jacoco (also supports the old coverage format, as written by cloverage)
 - Cobertura (does not yet support the subpackage aggregation)
+- Go (does not yet support the subpackage aggregation)
 
 # Analysis
 
