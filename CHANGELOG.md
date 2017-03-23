@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ## [0.9.0] - 2017-03-23
+### Added
 - aggregate / on go coverage files
 
 ## [0.8.0] - 2017-02-07
