@@ -57,7 +57,7 @@
 ;; parse-root
 
 (deftest should-parse-root
-  (is (= (parse-root (_read-test-xml _minimal)))))
+  (is (= (parse-root (_read-test-xml _minimal)) {:covered 3 :lines 4 :percentage 0.75})))
 
 (deftest should-not-parse-nosummary
   (is (thrown? Exception (parse-root (_read-test-xml _nosummary)))))
