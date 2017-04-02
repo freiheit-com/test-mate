@@ -2,7 +2,7 @@
   (:require [clojure.java.shell :refer [sh]]
             [clojure.string     :as string :refer [split-lines]]))
 
-(def +default-path-prefix+ "src/main/java/")
+(def +default-path-prefix+ "server/src/main/java/")
 
 (defn- git-log-cmd [git-repo file]
   ["git" "--no-pager" "log" "--format='%h %s'" "--no-merges"
