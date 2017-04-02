@@ -36,8 +36,8 @@
   (let [latest (load-latest-data project-name)
         provided-percentage (percentage-of-pushed push-stats)
         pushed-percentage (:percentage (:overall-coverage latest))]
-    (println (format "Stats-Server: %s Provided: %s" (* 100 pushed-percentage) (* 100 provided-percentage)))
-    (< pushed-percentage (- provided-percentage fail-epsilon))))
+    (println (format "Stats-Server: %s Provided: %s"(* 100 pushed-percentage) (* 100 provided-percentage)))
+    (< provided-percentage (- pushed-percentage fail-epsilon))))
 
 (defn- post-data-to-server [coverage-stats project-name]
   (let [coverage (select-keys coverage-stats [:covered :lines])
@@ -49,14 +49,17 @@
     (println "Successfully pushed " data " to " publish-coverage-url)))
 
 (defn- validate-data [coverage-stats project-name]
-  (when (decreasing-coverage? coverage-stats project-name))
-    (println "Decreasing coverage detected, not allowed by configuration, terminating.")
-    (exit/terminate -1))
+  (if (decreasing-coverage? coverage-stats project-name)
+    (do
+      (println "Decreasing coverage detected, not allowed by configuration, terminating.")
+      (exit/terminate -1)
+      false)
+    true))
 
 (defn- send-data [coverage-stats project-name]
-  (when-not (config/allow-decreasing-coverage)
-    (validate-data coverage-stats project-name))
-  (post-data-to-server coverage-stats project-name))
+  (when (or (config/allow-decreasing-coverage)
+            (validate-data coverage-stats project-name))
+    (post-data-to-server coverage-stats project-name)))
 
 (defn- put-project [project-def]
   (let [put-data (only-project-data project-def)]
