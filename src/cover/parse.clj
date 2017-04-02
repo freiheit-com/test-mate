@@ -61,18 +61,18 @@
   "Parses COVERAGE-FILE and returns an object of packages containing coverage statistics"
   [coverage-file]
   (let [type (discover-type coverage-file)]
-    (cond
-      (= type :jacoco) (jacoco/stats coverage-file)
-      (= type :cobertura) (cobertura/stats coverage-file)
-      (= type :go) (go/stats coverage-file))))
+    (condp = type
+      :jacoco (jacoco/stats coverage-file)
+      :cobertura (cobertura/stats coverage-file)
+      :go (go/stats coverage-file))))
 
 (defn aggregate
    "Parses COVERAGE-FILE and returns an object of packages containing coverage data"
   [coverage-file packages]
   (let [type (discover-type coverage-file)]
-    (cond
-      (= type :jacoco) (jacoco/aggregate packages coverage-file)
-      (= type :cobertura) (cobertura/aggregate packages coverage-file)
-      (= type :go) (if (= packages ["/"])
-                     (go/stats coverage-file)
-                     (command/exit-with-usage "aggregate for go files does not support package other than /" "aggregate")))))
+    (condp = type
+      :jacoco (jacoco/aggregate packages coverage-file)
+      :cobertura (cobertura/aggregate packages coverage-file)
+      :go (if (= packages ["/"])
+            (go/stats coverage-file)
+            (command/exit-with-usage "aggregate for go files does not support package other than /" "aggregate")))))

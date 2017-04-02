@@ -8,7 +8,8 @@
 (defn -main [& main-args]
   (let [command (first main-args)
         args (rest main-args)]
-    (cond (= command "aggregate") (println "aggregate: " (cover/aggregate (first args) (rest args)))
-          (= command "analysis") (analysis/analysis args)
-          (= command "statistic-server") (statistic-server/push-data args)
-          :else (cmd/exit-with-usage (str "Unknown command: " command) command))))
+    (condp = command
+      "aggregate" (println "aggregate: " (cover/aggregate (first args) (rest args)))
+      "analysis" (analysis/analysis args)
+      "statistic-server" (statistic-server/push-data args)
+      (cmd/exit-with-usage (str "Unknown command: " command) command))))

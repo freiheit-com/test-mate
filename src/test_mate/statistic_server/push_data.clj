@@ -84,6 +84,7 @@
 
 (defn push-data [[cmd & args]]
   "Multiplex function for statistic-server commands"
-  (cond (= cmd "publish-coverage") (publish-statistic-data (first args) (second args))
-        (= cmd "add-project") (add-project (first args))
-        :else (command/exit-with-usage (str "unknown statistic-server command: " cmd) "statistic-server")))
+  (condp = cmd
+    "publish-coverage" (publish-statistic-data (first args) (second args))
+    "add-project" (add-project (first args))
+    (command/exit-with-usage (str "unknown statistic-server command: " cmd) "statistic-server")))
