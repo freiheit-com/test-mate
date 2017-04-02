@@ -3,7 +3,8 @@
             [cover.aggregate.cobertura :refer :all]
             [cover.reader.xml-non-validate :as reader]
             [clojure.zip :as zip]
-            [clojure.xml :as xml]))
+            [clojure.xml :as xml]
+            [clojure.zip :as z]))
 
 (def _cobertura-dir "test/cover/testfiles/cobertura/")
 (defn _test-path [f] (str _cobertura-dir f))
@@ -22,6 +23,12 @@
 (def _uncovered-line (_zip-str "<line hits=\"0\"/>"))
 (def _invalid-line (_zip-str "<line hits=\"foo\"/>"))
 
+(def _full-zip (-> (_zip-str "<quux name=\"quux\"><baz name=\"baz\"><bar name=\"bar\"><foo><line hits=\"foo\"/></foo></bar></baz></quux>")
+                    zip/down
+                    zip/down
+                    zip/down
+                    zip/down))
+
 ;; get-counts
 
 (deftest should-get-counts-from-valid-line
@@ -39,6 +46,16 @@
 
 (deftest should-not-throw-invalid
   (is (false? (hit? []))))
+
+;; get-class
+
+(deftest should-get-class-from-zip
+  (is (= "bar" (get-class _full-zip))))
+
+;; get-package
+
+(deftest should-get-package-from-zip
+  (is (= "quux" (get-package _full-zip))))
 
 ;; get-lines
 
