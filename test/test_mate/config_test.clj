@@ -14,9 +14,11 @@
 (facts "about default properties"
   (fact "gets default props from valid minimal file"
     (binding [*test-mate-config* (#'test-mate.config/read-config-file (java.io.File. "test/test_mate/testfiles/minimal_valid_config"))]
-      (allow-decreasing-coverage) => true)))
+      (allow-decreasing-coverage) => true
+      (coverage-threshold) => 0.0)))
 
 (facts "about property access"
-  (fact "gets default props from valid minimal file"
+  (fact "gets default props from valid maximal file"
     (binding [*test-mate-config* (#'test-mate.config/read-config-file (java.io.File. "test/test_mate/testfiles/maximal_valid_config"))]
-      (allow-decreasing-coverage) => false)))
+      (allow-decreasing-coverage) => false
+      (and (< (coverage-threshold) 0.8513) (> (coverage-threshold) 0.8511)) => true)))

@@ -4,6 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 - added statistic-server check-coverage for independent checking of coverage diff with server
+- added support for coverage threshold (option to fail push if coverage not meet threshold)
 
 ## [0.9.0] - 2017-03-23
 ### Added

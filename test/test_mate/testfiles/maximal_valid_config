@@ -1,4 +1,5 @@
 {
  :statistic-server-url "https://server-via-property-set"
  :allow-decreasing-coverage false
+ :coverage-threshold 85.12
 }
