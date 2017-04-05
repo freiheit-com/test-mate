@@ -38,3 +38,8 @@
   (let [option (:allow-decreasing-coverage *test-mate-config*)]
     (if (nil? option)
       true (boolean option))))
+
+(defn coverage-threshold []
+  (let [option (:coverage-threshold *test-mate-config*)]
+    (if (nil? option)
+      0.0 (/ (double option) 100.0))))

@@ -56,9 +56,20 @@
       false)
     true))
 
+(defn- validate-threshold [coverage-stats threshold-percentage]
+  (if (< (percentage-of-pushed coverage-stats) threshold-percentage)
+    (do
+      (println "Decreasing coverage detected, not allowed by configured threashold, terminating.")
+      (exit/terminate -1)
+      false)
+    true))
+
 (defn- send-data [coverage-stats project-name]
-  (when (or (config/allow-decreasing-coverage)
-            (validate-data coverage-stats project-name))
+  (when
+    (and
+      (or (config/allow-decreasing-coverage) ; defaults to true
+          (validate-data coverage-stats project-name))
+      (validate-threshold coverage-stats (config/coverage-threshold))) ; defaults to 0 percent
     (post-data-to-server coverage-stats project-name)))
 
 (defn- put-project [project-def]

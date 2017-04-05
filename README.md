@@ -28,6 +28,7 @@ You can provide the following data in the config file:
        :language "java"
      }
      :allow-decreasing-coverage false
+     :coverage-threshold 85.0
     }
 
 The option `:allow-decreasing-coverage` defaults to `true` if not configured. If set to false the push will fail with

@@ -126,4 +126,24 @@
         (parse/stats ..coverage-file..) => {:lines 10000 :covered 3333}
         (client/get anything anything) => {:body "{\"overall-coverage\": {\"lines\": 10000, \"covered\": 3340, \"percentage\": 0.0334}}"}
         (client/put anything (body-with {:lines 10000 :covered 3333 :project "test" :subproject "test-sub" :language "clojure"})) => irrelevant
-        (exit/terminate -1) => anything :times 0))))
+        (exit/terminate -1) => anything :times 0)))
+
+  (fact "does not publish data and terminate with non-zero value if coverate threshold not met"
+    (binding [config/*test-mate-config* {:coverage-threshold 85.0}]
+      (publish-statistic-data ..coverage-file.. nil) => irrelevant
+      (provided
+        (config/coverage-threshold) => 0.85
+        (#'dut/read-with-prj-defaults anything) => {:project "test" :subproject "test-sub" :language "clojure"}
+        (parse/stats ..coverage-file..) => {:lines 1000 :covered 800}
+        (exit/terminate -1) => false)))
+
+  (fact "does publish data if new coverage is above threshold"
+    (binding [config/*test-mate-config* {:coverage-threshold 85}]
+      (publish-statistic-data ..coverage-file.. nil) => irrelevant
+      (provided
+        (config/coverage-threshold) => 0.85
+        (config/default-project) => {:project "test" :subproject "test-sub" :language "clojure"}
+        (parse/stats ..coverage-file..) => {:lines 10000 :covered 8700}
+        (client/put anything (body-with {:lines 10000 :covered 8700 :project "test" :subproject "test-sub" :language "clojure"})) => irrelevant
+        (exit/terminate -1) => anything :times 0)))
+)
