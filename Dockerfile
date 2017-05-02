@@ -1,6 +1,6 @@
 FROM anapsix/alpine-java:8
 
-ENV MATE_VERSION=0.7.0
+ENV MATE_VERSION=0.10.0
 
 RUN mkdir -p /usr/test-mate/
 COPY target/test-mate-$MATE_VERSION.jar /usr/test-mate/
