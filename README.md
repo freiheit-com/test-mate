@@ -55,6 +55,12 @@ You can overwrite the default project data with an extra argument to the publish
 The provided data are merged with the default-project data and you can omit any key as long as they are defined
 in the config file.
 
+## checking coverage difference
+
+    test-mate statistic-server check-coverage <path/to/jacoco_coverage.xml>
+
+The command check-coverage will calculate the aggregated coverage of the provided coverage file and compare it to the value currently pushed to the server, failing if the provided file's coverage is lower. This allows easily failing the build if coverage sinks compared to the current master.
+
 ## adding projects
 
     test-mate statistic-server add-project <path/to/project-def-file>
