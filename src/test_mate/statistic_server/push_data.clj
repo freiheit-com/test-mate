@@ -62,7 +62,9 @@
       (println (format "Decreasing coverage detected, not allowed by configured threshold, terminating. %s < %s" (percentage-of-pushed coverage-stats) threshold-percentage))
       (exit/terminate -1)
       false)
-    true))
+    (do
+      (println (format "Coverage ok! %s >= %s" (percentage-of-pushed coverage-stats) threshold-percentage))
+      true)))
 
 (defn- send-data [coverage-stats project-name]
   (when
