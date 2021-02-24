@@ -24,7 +24,7 @@
      (:body (client/get (latest-coverage-url project-def)
                {:insecure? true
                 :content-type :json
-                :headers {"auth-token" (config/statistics-auth-token)}}))
+                :headers {"Authorization" (str "Bearer" (config/statistics-auth-token))}}))
     true))
 
 (defn percentage-of-pushed [pushed-data]
@@ -45,7 +45,7 @@
     (client/put publish-coverage-url {:body (cheshire/generate-string data)
                                       :insecure? true
                                       :content-type :json
-                                      :headers {"auth-token" (config/publish-auth-token)}})
+                                      :headers {"Authorization" (str "Bearer" (config/publish-auth-token))}})
     (println "Successfully pushed " data " to " publish-coverage-url)))
 
 (defn- validate-data [coverage-stats project-name]
